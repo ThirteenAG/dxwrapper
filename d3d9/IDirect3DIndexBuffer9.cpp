@@ -46,7 +46,7 @@ ULONG m_IDirect3DIndexBuffer9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DIndexBuffer9::Release(THIS)
@@ -55,7 +55,7 @@ ULONG m_IDirect3DIndexBuffer9::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0 && m_pDeviceEx->GetClientDXVersion() < 8)
+	if (ref ==0 && m_pDeviceEx->GetClientDXVersion() <8)
 	{
 		m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
@@ -81,68 +81,68 @@ HRESULT m_IDirect3DIndexBuffer9::SetPrivateData(THIS_ REFGUID refguid, CONST voi
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags);
+	return CALL_AND_HANDLE(ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags))
 }
 
 HRESULT m_IDirect3DIndexBuffer9::GetPrivateData(THIS_ REFGUID refguid, void* pData, DWORD* pSizeOfData)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData);
+	return CALL_AND_HANDLE(ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData))
 }
 
 HRESULT m_IDirect3DIndexBuffer9::FreePrivateData(THIS_ REFGUID refguid)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->FreePrivateData(refguid);
+	return CALL_AND_HANDLE(ProxyInterface->FreePrivateData(refguid))
 }
 
 DWORD m_IDirect3DIndexBuffer9::SetPriority(THIS_ DWORD PriorityNew)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPriority(PriorityNew);
+	return CALL_AND_HANDLE(ProxyInterface->SetPriority(PriorityNew))
 }
 
 DWORD m_IDirect3DIndexBuffer9::GetPriority(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPriority();
+	return CALL_AND_HANDLE(ProxyInterface->GetPriority())
 }
 
 void m_IDirect3DIndexBuffer9::PreLoad(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->PreLoad();
+	VOID_CALL_AND_HANDLE(ProxyInterface->PreLoad())
 }
 
 D3DRESOURCETYPE m_IDirect3DIndexBuffer9::GetType(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetType();
+	return CALL_AND_HANDLE(ProxyInterface->GetType())
 }
 
 HRESULT m_IDirect3DIndexBuffer9::Lock(THIS_ UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+	return CALL_AND_HANDLE(ProxyInterface->Lock(OffsetToLock, SizeToLock, ppbData, Flags))
 }
 
 HRESULT m_IDirect3DIndexBuffer9::Unlock(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Unlock();
+	return CALL_AND_HANDLE(ProxyInterface->Unlock())
 }
 
 HRESULT m_IDirect3DIndexBuffer9::GetDesc(THIS_ D3DINDEXBUFFER_DESC *pDesc)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDesc(pDesc);
+	return CALL_AND_HANDLE(ProxyInterface->GetDesc(pDesc))
 }

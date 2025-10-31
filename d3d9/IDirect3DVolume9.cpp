@@ -46,7 +46,7 @@ ULONG m_IDirect3DVolume9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DVolume9::Release(THIS)
@@ -55,7 +55,7 @@ ULONG m_IDirect3DVolume9::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0 && m_pDeviceEx->GetClientDXVersion() < 8)
+	if (ref ==0 && m_pDeviceEx->GetClientDXVersion() <8)
 	{
 		m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
@@ -81,28 +81,28 @@ HRESULT m_IDirect3DVolume9::SetPrivateData(THIS_ REFGUID refguid, CONST void* pD
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags);
+	return CALL_AND_HANDLE(ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags))
 }
 
 HRESULT m_IDirect3DVolume9::GetPrivateData(THIS_ REFGUID refguid, void* pData, DWORD* pSizeOfData)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData);
+	return CALL_AND_HANDLE(ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData))
 }
 
 HRESULT m_IDirect3DVolume9::FreePrivateData(THIS_ REFGUID refguid)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->FreePrivateData(refguid);
+	return CALL_AND_HANDLE(ProxyInterface->FreePrivateData(refguid))
 }
 
 HRESULT m_IDirect3DVolume9::GetContainer(THIS_ REFIID riid, void** ppContainer)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetContainer(riid, ppContainer);
+	HRESULT hr = CALL_AND_HANDLE(ProxyInterface->GetContainer(riid, ppContainer))
 
 	if (SUCCEEDED(hr))
 	{
@@ -116,19 +116,19 @@ HRESULT m_IDirect3DVolume9::GetDesc(THIS_ D3DVOLUME_DESC *pDesc)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDesc(pDesc);
+	return CALL_AND_HANDLE(ProxyInterface->GetDesc(pDesc))
 }
 
 HRESULT m_IDirect3DVolume9::LockBox(THIS_ D3DLOCKED_BOX * pLockedVolume, CONST D3DBOX* pBox, DWORD Flags)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->LockBox(pLockedVolume, pBox, Flags);
+	return CALL_AND_HANDLE(ProxyInterface->LockBox(pLockedVolume, pBox, Flags))
 }
 
 HRESULT m_IDirect3DVolume9::UnlockBox(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->UnlockBox();
+	return CALL_AND_HANDLE(ProxyInterface->UnlockBox())
 }

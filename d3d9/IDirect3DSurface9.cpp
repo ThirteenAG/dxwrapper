@@ -63,7 +63,7 @@ ULONG m_IDirect3DSurface9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DSurface9::Release(THIS)
@@ -72,7 +72,7 @@ ULONG m_IDirect3DSurface9::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0)
+	if (ref ==0)
 	{
 		if (Emu.pSurface)
 		{
@@ -84,13 +84,13 @@ ULONG m_IDirect3DSurface9::Release(THIS)
 			Emu.pSurface = nullptr;
 		}
 
-		if (m_pDeviceEx->GetClientDXVersion() < 8)
+		if (m_pDeviceEx->GetClientDXVersion() <8)
 		{
 			m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
 			delete this;
 		}
-    }
+ }
 
 	return ref;
 }
@@ -111,56 +111,56 @@ HRESULT m_IDirect3DSurface9::SetPrivateData(THIS_ REFGUID refguid, CONST void* p
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags);
+	return CALL_AND_HANDLE(ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags))
 }
 
 HRESULT m_IDirect3DSurface9::GetPrivateData(THIS_ REFGUID refguid, void* pData, DWORD* pSizeOfData)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData);
+	return CALL_AND_HANDLE(ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData))
 }
 
 HRESULT m_IDirect3DSurface9::FreePrivateData(THIS_ REFGUID refguid)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->FreePrivateData(refguid);
+	return CALL_AND_HANDLE(ProxyInterface->FreePrivateData(refguid))
 }
 
 DWORD m_IDirect3DSurface9::SetPriority(THIS_ DWORD PriorityNew)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPriority(PriorityNew);
+	return CALL_AND_HANDLE(ProxyInterface->SetPriority(PriorityNew))
 }
 
 DWORD m_IDirect3DSurface9::GetPriority(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPriority();
+	return CALL_AND_HANDLE(ProxyInterface->GetPriority())
 }
 
 void m_IDirect3DSurface9::PreLoad(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->PreLoad();
+	VOID_CALL_AND_HANDLE(ProxyInterface->PreLoad())
 }
 
 D3DRESOURCETYPE m_IDirect3DSurface9::GetType(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetType();
+	return CALL_AND_HANDLE(ProxyInterface->GetType())
 }
 
 HRESULT m_IDirect3DSurface9::GetContainer(THIS_ REFIID riid, void** ppContainer)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetContainer(riid, ppContainer);
+	HRESULT hr = CALL_AND_HANDLE(ProxyInterface->GetContainer(riid, ppContainer))
 
 	if (SUCCEEDED(hr))
 	{
@@ -174,14 +174,14 @@ HRESULT m_IDirect3DSurface9::GetDesc(THIS_ D3DSURFACE_DESC *pDesc)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDesc(pDesc);
+	return CALL_AND_HANDLE(ProxyInterface->GetDesc(pDesc))
 }
 
 m_IDirect3DSurface9* m_IDirect3DSurface9::m_GetNonMultiSampledSurface(const RECT* pRect, DWORD Flags)
 {
 	if (!Emu.pSurface)
 	{
-		if (SUCCEEDED((Desc.Usage & D3DUSAGE_RENDERTARGET) ? m_pDeviceEx->GetProxyInterface()->CreateRenderTarget(Desc.Width, Desc.Height, Desc.Format, D3DMULTISAMPLE_NONE, 0, TRUE, (LPDIRECT3DSURFACE9*)&Emu.pSurface, nullptr) :
+		if (SUCCEEDED((Desc.Usage & D3DUSAGE_RENDERTARGET) ? m_pDeviceEx->GetProxyInterface()->CreateRenderTarget(Desc.Width, Desc.Height, Desc.Format, D3DMULTISAMPLE_NONE,0, TRUE, (LPDIRECT3DSURFACE9*)&Emu.pSurface, nullptr) :
 			m_pDeviceEx->GetProxyInterface()->CreateOffscreenPlainSurface(Desc.Width, Desc.Height, Desc.Format, D3DPOOL_SYSTEMMEM, (LPDIRECT3DSURFACE9*)&Emu.pSurface, nullptr)))
 		{
 			Emu.pSurface = m_pDeviceEx->GetLookupTable()->FindCreateAddress<m_IDirect3DSurface9, m_IDirect3DDevice9Ex, LPVOID>(Emu.pSurface, m_pDeviceEx, IID_IDirect3DSurface9, nullptr);
@@ -193,7 +193,7 @@ m_IDirect3DSurface9* m_IDirect3DSurface9::m_GetNonMultiSampledSurface(const RECT
 		Emu.Rect = (pRect) ? *pRect : Emu.Rect;
 		Emu.pRect = (pRect) ? &Emu.Rect : nullptr;
 
-		if (FAILED(m_pDeviceEx->CopyRects(this, pRect, 1, Emu.pSurface, (LPPOINT)pRect)))
+		if (FAILED(m_pDeviceEx->CopyRects(this, pRect,1, Emu.pSurface, (LPPOINT)pRect)))
 		{
 			LOG_LIMIT(100, __FUNCTION__ << " Error: copying surface!");
 		}
@@ -210,7 +210,7 @@ HRESULT m_IDirect3DSurface9::RestoreMultiSampleData()
 {
 	if (Emu.pSurface && !Emu.ReadOnly)
 	{
-		if (FAILED(m_pDeviceEx->CopyRects(Emu.pSurface, Emu.pRect, 1, this, (LPPOINT)Emu.pRect)))
+		if (FAILED(m_pDeviceEx->CopyRects(Emu.pSurface, Emu.pRect,1, this, (LPPOINT)Emu.pRect)))
 		{
 			LOG_LIMIT(100, __FUNCTION__ << " Error: copying emulated surface!");
 			return D3DERR_INVALIDCALL;
@@ -251,14 +251,14 @@ HRESULT m_IDirect3DSurface9::UnlockRect(THIS)
 		return hr;
 	}
 
-	return ProxyInterface->UnlockRect();
+	return CALL_AND_HANDLE(ProxyInterface->UnlockRect())
 }
 
 HRESULT m_IDirect3DSurface9::GetDC(THIS_ HDC *phdc)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return GetNonMultiSampledSurface(nullptr, 0)->GetDC(phdc);
+	return GetNonMultiSampledSurface(nullptr,0)->GetDC(phdc);
 }
 
 HRESULT m_IDirect3DSurface9::ReleaseDC(THIS_ HDC hdc)
@@ -281,5 +281,5 @@ HRESULT m_IDirect3DSurface9::ReleaseDC(THIS_ HDC hdc)
 		return hr;
 	}
 
-	return ProxyInterface->ReleaseDC(hdc);
+	return CALL_AND_HANDLE(ProxyInterface->ReleaseDC(hdc))
 }

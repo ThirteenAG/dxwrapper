@@ -46,7 +46,7 @@ ULONG m_IDirect3DCubeTexture9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DCubeTexture9::Release(THIS)
@@ -55,7 +55,7 @@ ULONG m_IDirect3DCubeTexture9::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0 && m_pDeviceEx->GetClientDXVersion() < 8)
+	if (ref ==0 && m_pDeviceEx->GetClientDXVersion() <8)
 	{
 		m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
@@ -81,105 +81,105 @@ HRESULT m_IDirect3DCubeTexture9::SetPrivateData(THIS_ REFGUID refguid, CONST voi
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags);
+	return CALL_AND_HANDLE(ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags))
 }
 
 HRESULT m_IDirect3DCubeTexture9::GetPrivateData(THIS_ REFGUID refguid, void* pData, DWORD* pSizeOfData)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData);
+	return CALL_AND_HANDLE(ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData))
 }
 
 HRESULT m_IDirect3DCubeTexture9::FreePrivateData(THIS_ REFGUID refguid)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->FreePrivateData(refguid);
+	return CALL_AND_HANDLE(ProxyInterface->FreePrivateData(refguid))
 }
 
 DWORD m_IDirect3DCubeTexture9::SetPriority(THIS_ DWORD PriorityNew)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPriority(PriorityNew);
+	return CALL_AND_HANDLE(ProxyInterface->SetPriority(PriorityNew))
 }
 
 DWORD m_IDirect3DCubeTexture9::GetPriority(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPriority();
+	return CALL_AND_HANDLE(ProxyInterface->GetPriority())
 }
 
 void m_IDirect3DCubeTexture9::PreLoad(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	ProxyInterface->PreLoad();
+	VOID_CALL_AND_HANDLE(ProxyInterface->PreLoad())
 }
 
 D3DRESOURCETYPE m_IDirect3DCubeTexture9::GetType(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetType();
+	return CALL_AND_HANDLE(ProxyInterface->GetType())
 }
 
 DWORD m_IDirect3DCubeTexture9::SetLOD(THIS_ DWORD LODNew)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetLOD(LODNew);
+	return CALL_AND_HANDLE(ProxyInterface->SetLOD(LODNew))
 }
 
 DWORD m_IDirect3DCubeTexture9::GetLOD(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetLOD();
+	return CALL_AND_HANDLE(ProxyInterface->GetLOD())
 }
 
 DWORD m_IDirect3DCubeTexture9::GetLevelCount(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetLevelCount();
+	return CALL_AND_HANDLE(ProxyInterface->GetLevelCount())
 }
 
 HRESULT m_IDirect3DCubeTexture9::SetAutoGenFilterType(THIS_ D3DTEXTUREFILTERTYPE FilterType)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetAutoGenFilterType(FilterType);
+	return CALL_AND_HANDLE(ProxyInterface->SetAutoGenFilterType(FilterType))
 }
 
 D3DTEXTUREFILTERTYPE m_IDirect3DCubeTexture9::GetAutoGenFilterType(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetAutoGenFilterType();
+	return CALL_AND_HANDLE(ProxyInterface->GetAutoGenFilterType())
 }
 
 void m_IDirect3DCubeTexture9::GenerateMipSubLevels(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GenerateMipSubLevels();
+	VOID_CALL_AND_HANDLE(ProxyInterface->GenerateMipSubLevels())
 }
 
 HRESULT m_IDirect3DCubeTexture9::GetLevelDesc(THIS_ UINT Level, D3DSURFACE_DESC *pDesc)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetLevelDesc(Level, pDesc);
+	return CALL_AND_HANDLE(ProxyInterface->GetLevelDesc(Level, pDesc))
 }
 
 HRESULT m_IDirect3DCubeTexture9::GetCubeMapSurface(THIS_ D3DCUBEMAP_FACES FaceType, UINT Level, IDirect3DSurface9** ppCubeMapSurface)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetCubeMapSurface(FaceType, Level, ppCubeMapSurface);
+	HRESULT hr = CALL_AND_HANDLE(ProxyInterface->GetCubeMapSurface(FaceType, Level, ppCubeMapSurface))
 
 	if (SUCCEEDED(hr) && ppCubeMapSurface)
 	{
@@ -193,19 +193,19 @@ HRESULT m_IDirect3DCubeTexture9::LockRect(THIS_ D3DCUBEMAP_FACES FaceType, UINT 
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->LockRect(FaceType, Level, pLockedRect, pRect, Flags);
+	return CALL_AND_HANDLE(ProxyInterface->LockRect(FaceType, Level, pLockedRect, pRect, Flags))
 }
 
 HRESULT m_IDirect3DCubeTexture9::UnlockRect(THIS_ D3DCUBEMAP_FACES FaceType, UINT Level)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->UnlockRect(FaceType, Level);
+	return CALL_AND_HANDLE(ProxyInterface->UnlockRect(FaceType, Level))
 }
 
 HRESULT m_IDirect3DCubeTexture9::AddDirtyRect(THIS_ D3DCUBEMAP_FACES FaceType, CONST RECT* pDirtyRect)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddDirtyRect(FaceType, pDirtyRect);
+	return CALL_AND_HANDLE(ProxyInterface->AddDirtyRect(FaceType, pDirtyRect))
 }

@@ -46,7 +46,7 @@ ULONG m_IDirect3DVideoDevice9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DVideoDevice9::Release(THIS)
@@ -55,7 +55,7 @@ ULONG m_IDirect3DVideoDevice9::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0 && m_pDeviceEx->GetClientDXVersion() < 8)
+	if (ref ==0 && m_pDeviceEx->GetClientDXVersion() <8)
 	{
 		m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
@@ -69,7 +69,7 @@ HRESULT m_IDirect3DVideoDevice9::CreateSurface(THIS_ UINT Width, UINT Height, UI
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->CreateSurface(Width, Height, BackBuffers, Format, Pool, Usage, ppSurface, pSharedHandle);
+	HRESULT hr = CALL_AND_HANDLE(ProxyInterface->CreateSurface(Width, Height, BackBuffers, Format, Pool, Usage, ppSurface, pSharedHandle))
 
 	if (SUCCEEDED(hr) && ppSurface)
 	{
@@ -85,35 +85,35 @@ HRESULT m_IDirect3DVideoDevice9::GetDXVACompressedBufferInfo(THIS_ GUID* pGuid, 
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDXVACompressedBufferInfo(pGuid, pUncompData, pNumBuffers, pBufferInfo);
+	return CALL_AND_HANDLE(ProxyInterface->GetDXVACompressedBufferInfo(pGuid, pUncompData, pNumBuffers, pBufferInfo))
 }
 
 HRESULT m_IDirect3DVideoDevice9::GetDXVAGuids(THIS_ DWORD* pNumGuids, GUID* pGuids)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDXVAGuids(pNumGuids, pGuids);
+	return CALL_AND_HANDLE(ProxyInterface->GetDXVAGuids(pNumGuids, pGuids))
 }
 
 HRESULT m_IDirect3DVideoDevice9::GetDXVAInternalInfo(THIS_ GUID* pGuid, DXVAUncompDataInfo* pUncompData, DWORD* pMemoryUsed)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDXVAInternalInfo(pGuid, pUncompData, pMemoryUsed);
+	return CALL_AND_HANDLE(ProxyInterface->GetDXVAInternalInfo(pGuid, pUncompData, pMemoryUsed))
 }
 
 HRESULT m_IDirect3DVideoDevice9::GetUncompressedDXVAFormats(THIS_ GUID* pGuid, DWORD* pNumFormats, D3DFORMAT* pFormats)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetUncompressedDXVAFormats(pGuid, pNumFormats, pFormats);
+	return CALL_AND_HANDLE(ProxyInterface->GetUncompressedDXVAFormats(pGuid, pNumFormats, pFormats))
 }
 
 HRESULT m_IDirect3DVideoDevice9::CreateDXVADevice(THIS_ GUID* pGuid, DXVAUncompDataInfo* pUncompData, LPVOID pData, DWORD DataSize, IDirect3DDXVADevice9** ppDXVADevice)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->CreateDXVADevice(pGuid, pUncompData, pData, DataSize, ppDXVADevice);
+	HRESULT hr = CALL_AND_HANDLE(ProxyInterface->CreateDXVADevice(pGuid, pUncompData, pData, DataSize, ppDXVADevice))
 
 	if (SUCCEEDED(hr) && ppDXVADevice)
 	{

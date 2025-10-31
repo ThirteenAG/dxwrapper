@@ -9,6 +9,30 @@
 #include <deque>
 #include <algorithm>
 
+// Safe call helpers
+#ifndef CALL_AND_HANDLE
+#define CALL_AND_HANDLE(expr) \
+ [&]() -> decltype(expr) { \
+ __try { \
+ return (expr); \
+ } \
+ __except ((GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) { \
+ return static_cast<decltype(expr)>(D3D_OK); \
+ } \
+ }();
+#endif
+
+#ifndef VOID_CALL_AND_HANDLE
+#define VOID_CALL_AND_HANDLE(expr) \
+ [&]() { \
+ __try { \
+ (expr); \
+ } \
+ __except ((GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) { \
+ } \
+ }();
+#endif
+
 class m_IDirect3D9Ex;
 class m_IDirect3DDevice9Ex;
 class m_IDirect3DCubeTexture9;

@@ -46,7 +46,7 @@ ULONG m_IDirect3DVertexShader9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DVertexShader9::Release(THIS)
@@ -55,7 +55,7 @@ ULONG m_IDirect3DVertexShader9::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0 && m_pDeviceEx->GetClientDXVersion() < 8)
+	if (ref ==0 && m_pDeviceEx->GetClientDXVersion() <8)
 	{
 		m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
@@ -81,5 +81,5 @@ HRESULT m_IDirect3DVertexShader9::GetFunction(THIS_ void* pData, UINT* pSizeOfDa
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetFunction(pData, pSizeOfData);
+	return CALL_AND_HANDLE(ProxyInterface->GetFunction(pData, pSizeOfData))
 }

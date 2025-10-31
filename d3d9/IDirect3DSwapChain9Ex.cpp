@@ -59,7 +59,7 @@ ULONG m_IDirect3DSwapChain9Ex::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DSwapChain9Ex::Release(THIS)
@@ -68,7 +68,7 @@ ULONG m_IDirect3DSwapChain9Ex::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0 && m_pDeviceEx->GetClientDXVersion() < 8)
+	if (ref ==0 && m_pDeviceEx->GetClientDXVersion() <8)
 	{
 		m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
@@ -82,7 +82,7 @@ HRESULT m_IDirect3DSwapChain9Ex::Present(THIS_ CONST RECT* pSourceRect, CONST RE
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
+	return CALL_AND_HANDLE(ProxyInterface->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags))
 }
 
 HRESULT m_IDirect3DSwapChain9Ex::GetFrontBufferData(THIS_ IDirect3DSurface9* pDestSurface)
@@ -94,14 +94,14 @@ HRESULT m_IDirect3DSwapChain9Ex::GetFrontBufferData(THIS_ IDirect3DSurface9* pDe
 		pDestSurface = static_cast<m_IDirect3DSurface9 *>(pDestSurface)->GetProxyInterface();
 	}
 
-	return ProxyInterface->GetFrontBufferData(pDestSurface);
+	return CALL_AND_HANDLE(ProxyInterface->GetFrontBufferData(pDestSurface))
 }
 
 HRESULT m_IDirect3DSwapChain9Ex::GetBackBuffer(THIS_ UINT BackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9** ppBackBuffer)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetBackBuffer(BackBuffer, Type, ppBackBuffer);
+	HRESULT hr = CALL_AND_HANDLE(ProxyInterface->GetBackBuffer(BackBuffer, Type, ppBackBuffer))
 
 	if (SUCCEEDED(hr) && ppBackBuffer)
 	{
@@ -115,7 +115,7 @@ HRESULT m_IDirect3DSwapChain9Ex::GetRasterStatus(THIS_ D3DRASTER_STATUS* pRaster
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetRasterStatus(pRasterStatus);
+	return CALL_AND_HANDLE(ProxyInterface->GetRasterStatus(pRasterStatus))
 }
 
 HRESULT m_IDirect3DSwapChain9Ex::GetDisplayMode(THIS_ D3DDISPLAYMODE* pMode)
@@ -143,7 +143,7 @@ HRESULT m_IDirect3DSwapChain9Ex::GetDisplayMode(THIS_ D3DDISPLAYMODE* pMode)
 		return hr;
 	}
 
-	return ProxyInterface->GetDisplayMode(pMode);
+	return CALL_AND_HANDLE(ProxyInterface->GetDisplayMode(pMode))
 }
 
 HRESULT m_IDirect3DSwapChain9Ex::GetDevice(THIS_ IDirect3DDevice9** ppDevice)
@@ -162,7 +162,7 @@ HRESULT m_IDirect3DSwapChain9Ex::GetPresentParameters(THIS_ D3DPRESENT_PARAMETER
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPresentParameters(pPresentationParameters);
+	return CALL_AND_HANDLE(ProxyInterface->GetPresentParameters(pPresentationParameters))
 }
 
 HRESULT m_IDirect3DSwapChain9Ex::GetLastPresentCount(THIS_ UINT* pLastPresentCount)
@@ -175,7 +175,7 @@ HRESULT m_IDirect3DSwapChain9Ex::GetLastPresentCount(THIS_ UINT* pLastPresentCou
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetLastPresentCount(pLastPresentCount);
+	return CALL_AND_HANDLE(ProxyInterfaceEx->GetLastPresentCount(pLastPresentCount))
 }
 
 HRESULT m_IDirect3DSwapChain9Ex::GetPresentStats(THIS_ D3DPRESENTSTATS* pPresentationStatistics)
@@ -188,7 +188,7 @@ HRESULT m_IDirect3DSwapChain9Ex::GetPresentStats(THIS_ D3DPRESENTSTATS* pPresent
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetPresentStats(pPresentationStatistics);
+	return CALL_AND_HANDLE(ProxyInterfaceEx->GetPresentStats(pPresentationStatistics))
 }
 
 HRESULT m_IDirect3DSwapChain9Ex::GetDisplayModeEx(THIS_ D3DDISPLAYMODEEX* pMode, D3DDISPLAYROTATION* pRotation)
@@ -201,5 +201,5 @@ HRESULT m_IDirect3DSwapChain9Ex::GetDisplayModeEx(THIS_ D3DDISPLAYMODEEX* pMode,
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetDisplayModeEx(pMode, pRotation);
+	return CALL_AND_HANDLE(ProxyInterfaceEx->GetDisplayModeEx(pMode, pRotation))
 }

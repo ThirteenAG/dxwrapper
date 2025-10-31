@@ -46,7 +46,7 @@ ULONG m_IDirect3DVertexDeclaration9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DVertexDeclaration9::Release(THIS)
@@ -81,5 +81,5 @@ HRESULT m_IDirect3DVertexDeclaration9::GetDeclaration(THIS_ D3DVERTEXELEMENT9* p
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDeclaration(pElement, pNumElements);
+	return CALL_AND_HANDLE(ProxyInterface->GetDeclaration(pElement, pNumElements))
 }

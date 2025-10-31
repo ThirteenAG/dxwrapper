@@ -46,7 +46,7 @@ ULONG m_IDirect3DQuery9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return CALL_AND_HANDLE(ProxyInterface->AddRef())
 }
 
 ULONG m_IDirect3DQuery9::Release(THIS)
@@ -55,7 +55,7 @@ ULONG m_IDirect3DQuery9::Release(THIS)
 
 	ULONG ref = ProxyInterface->Release();
 
-	if (ref == 0 && m_pDeviceEx->GetClientDXVersion() < 8)
+	if (ref ==0 && m_pDeviceEx->GetClientDXVersion() <8)
 	{
 		m_pDeviceEx->GetLookupTable()->DeleteAddress(this);
 
@@ -81,26 +81,26 @@ D3DQUERYTYPE m_IDirect3DQuery9::GetType(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetType();
+	return CALL_AND_HANDLE(ProxyInterface->GetType())
 }
 
 DWORD m_IDirect3DQuery9::GetDataSize(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDataSize();
+	return CALL_AND_HANDLE(ProxyInterface->GetDataSize())
 }
 
 HRESULT m_IDirect3DQuery9::Issue(THIS_ DWORD dwIssueFlags)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Issue(dwIssueFlags);
+	return CALL_AND_HANDLE(ProxyInterface->Issue(dwIssueFlags))
 }
 
 HRESULT m_IDirect3DQuery9::GetData(THIS_ void* pData, DWORD dwSize, DWORD dwGetDataFlags)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetData(pData, dwSize, dwGetDataFlags);
+	return CALL_AND_HANDLE(ProxyInterface->GetData(pData, dwSize, dwGetDataFlags))
 }
