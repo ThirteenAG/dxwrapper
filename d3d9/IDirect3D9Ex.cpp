@@ -59,7 +59,7 @@ HRESULT m_IDirect3D9Ex::QueryInterface(REFIID riid, void** ppvObj)
 		return S_OK;
 	}
 
-	HRESULT hr = ProxyInterface->QueryInterface(riid, ppvObj);
+	HRESULT hr = SAFE(ProxyInterface->QueryInterface(riid, ppvObj));
 
 	if (SUCCEEDED(hr))
 	{
@@ -73,14 +73,14 @@ ULONG m_IDirect3D9Ex::AddRef()
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return SAFE(ProxyInterface->AddRef());
 }
 
 ULONG m_IDirect3D9Ex::Release()
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	ULONG ref = ProxyInterface->Release();
+	ULONG ref = SAFE(ProxyInterface->Release());
 
 	if (ref == 0)
 	{
@@ -98,21 +98,21 @@ HRESULT m_IDirect3D9Ex::RegisterSoftwareDevice(void* pInitializeFunction)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->RegisterSoftwareDevice(pInitializeFunction);
+	return SAFE(ProxyInterface->RegisterSoftwareDevice(pInitializeFunction));
 }
 
 UINT m_IDirect3D9Ex::GetAdapterCount()
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetAdapterCount();
+	return SAFE(ProxyInterface->GetAdapterCount());
 }
 
 HRESULT m_IDirect3D9Ex::GetAdapterIdentifier(UINT Adapter, DWORD Flags, D3DADAPTER_IDENTIFIER9* pIdentifier)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetAdapterIdentifier(Adapter, Flags, pIdentifier);
+	return SAFE(ProxyInterface->GetAdapterIdentifier(Adapter, Flags, pIdentifier));
 }
 
 UINT m_IDirect3D9Ex::GetAdapterModeCount(THIS_ UINT Adapter, D3DFORMAT Format)
@@ -124,7 +124,7 @@ UINT m_IDirect3D9Ex::GetAdapterModeCount(THIS_ UINT Adapter, D3DFORMAT Format)
 		return GetAdapterModeCache(Adapter, Format, false, nullptr);
 	}
 
-	return ProxyInterface->GetAdapterModeCount(Adapter, Format);
+	return SAFE(ProxyInterface->GetAdapterModeCount(Adapter, Format));
 }
 
 HRESULT m_IDirect3D9Ex::EnumAdapterModes(THIS_ UINT Adapter, D3DFORMAT Format, UINT Mode, D3DDISPLAYMODE* pMode)
@@ -156,14 +156,14 @@ HRESULT m_IDirect3D9Ex::EnumAdapterModes(THIS_ UINT Adapter, D3DFORMAT Format, U
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterface->EnumAdapterModes(Adapter, Format, Mode, pMode);
+	return SAFE(ProxyInterface->EnumAdapterModes(Adapter, Format, Mode, pMode));
 }
 
 HRESULT m_IDirect3D9Ex::GetAdapterDisplayMode(UINT Adapter, D3DDISPLAYMODE *pMode)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetAdapterDisplayMode(Adapter, pMode);
+	return SAFE(ProxyInterface->GetAdapterDisplayMode(Adapter, pMode));
 }
 
 HRESULT m_IDirect3D9Ex::CheckDeviceType(UINT Adapter, D3DDEVTYPE CheckType, D3DFORMAT DisplayFormat, D3DFORMAT BackBufferFormat, BOOL Windowed)
@@ -175,14 +175,14 @@ HRESULT m_IDirect3D9Ex::CheckDeviceType(UINT Adapter, D3DDEVTYPE CheckType, D3DF
 		Windowed = TRUE;
 	}
 
-	return ProxyInterface->CheckDeviceType(Adapter, CheckType, DisplayFormat, BackBufferFormat, Windowed);
+	return SAFE(ProxyInterface->CheckDeviceType(Adapter, CheckType, DisplayFormat, BackBufferFormat, Windowed));
 }
 
 HRESULT m_IDirect3D9Ex::CheckDeviceFormat(UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT AdapterFormat, DWORD Usage, D3DRESOURCETYPE RType, D3DFORMAT CheckFormat)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->CheckDeviceFormat(Adapter, DeviceType, AdapterFormat, Usage, RType, CheckFormat);
+	return SAFE(ProxyInterface->CheckDeviceFormat(Adapter, DeviceType, AdapterFormat, Usage, RType, CheckFormat));
 }
 
 HRESULT m_IDirect3D9Ex::CheckDeviceMultiSampleType(THIS_ UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT SurfaceFormat, BOOL Windowed, D3DMULTISAMPLE_TYPE MultiSampleType, DWORD* pQualityLevels)
@@ -194,28 +194,28 @@ HRESULT m_IDirect3D9Ex::CheckDeviceMultiSampleType(THIS_ UINT Adapter, D3DDEVTYP
 		Windowed = TRUE;
 	}
 
-	return ProxyInterface->CheckDeviceMultiSampleType(Adapter, DeviceType, SurfaceFormat, Windowed, MultiSampleType, pQualityLevels);
+	return SAFE(ProxyInterface->CheckDeviceMultiSampleType(Adapter, DeviceType, SurfaceFormat, Windowed, MultiSampleType, pQualityLevels));
 }
 
 HRESULT m_IDirect3D9Ex::CheckDepthStencilMatch(UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT AdapterFormat, D3DFORMAT RenderTargetFormat, D3DFORMAT DepthStencilFormat)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->CheckDepthStencilMatch(Adapter, DeviceType, AdapterFormat, RenderTargetFormat, DepthStencilFormat);
+	return SAFE(ProxyInterface->CheckDepthStencilMatch(Adapter, DeviceType, AdapterFormat, RenderTargetFormat, DepthStencilFormat));
 }
 
 HRESULT m_IDirect3D9Ex::CheckDeviceFormatConversion(THIS_ UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT SourceFormat, D3DFORMAT TargetFormat)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->CheckDeviceFormatConversion(Adapter, DeviceType, SourceFormat, TargetFormat);
+	return SAFE(ProxyInterface->CheckDeviceFormatConversion(Adapter, DeviceType, SourceFormat, TargetFormat));
 }
 
 HRESULT m_IDirect3D9Ex::GetDeviceCaps(UINT Adapter, D3DDEVTYPE DeviceType, D3DCAPS9* pCaps)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetDeviceCaps(Adapter, DeviceType, pCaps);
+	HRESULT hr = SAFE(ProxyInterface->GetDeviceCaps(Adapter, DeviceType, pCaps));
 
 	if (SUCCEEDED(hr))
 	{
@@ -229,7 +229,7 @@ HMONITOR m_IDirect3D9Ex::GetAdapterMonitor(UINT Adapter)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetAdapterMonitor(Adapter);
+	return SAFE(ProxyInterface->GetAdapterMonitor(Adapter));
 }
 
 HRESULT m_IDirect3D9Ex::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS *pPresentationParameters, IDirect3DDevice9 **ppReturnedDeviceInterface)
@@ -289,7 +289,7 @@ UINT m_IDirect3D9Ex::GetAdapterModeCountEx(THIS_ UINT Adapter, CONST D3DDISPLAYM
 		return GetAdapterModeCache(Adapter, D3DFMT_UNKNOWN, true, pFilter);
 	}
 
-	return ProxyInterfaceEx->GetAdapterModeCountEx(Adapter, pFilter);
+	return SAFE(ProxyInterfaceEx->GetAdapterModeCountEx(Adapter, pFilter));
 }
 
 HRESULT m_IDirect3D9Ex::EnumAdapterModesEx(THIS_ UINT Adapter, CONST D3DDISPLAYMODEFILTER* pFilter, UINT Mode, D3DDISPLAYMODEEX* pMode)
@@ -327,7 +327,7 @@ HRESULT m_IDirect3D9Ex::EnumAdapterModesEx(THIS_ UINT Adapter, CONST D3DDISPLAYM
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->EnumAdapterModesEx(Adapter, pFilter, Mode, pMode);
+	return SAFE(ProxyInterfaceEx->EnumAdapterModesEx(Adapter, pFilter, Mode, pMode));
 }
 
 HRESULT m_IDirect3D9Ex::GetAdapterDisplayModeEx(THIS_ UINT Adapter, D3DDISPLAYMODEEX* pMode, D3DDISPLAYROTATION* pRotation)
@@ -340,7 +340,7 @@ HRESULT m_IDirect3D9Ex::GetAdapterDisplayModeEx(THIS_ UINT Adapter, D3DDISPLAYMO
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetAdapterDisplayModeEx(Adapter, pMode, pRotation);
+	return SAFE(ProxyInterfaceEx->GetAdapterDisplayModeEx(Adapter, pMode, pRotation));
 }
 
 HRESULT m_IDirect3D9Ex::CreateDeviceEx(THIS_ UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface)
@@ -379,7 +379,7 @@ HRESULT m_IDirect3D9Ex::GetAdapterLUID(THIS_ UINT Adapter, LUID * pLUID)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetAdapterLUID(Adapter, pLUID);
+	return SAFE(ProxyInterfaceEx->GetAdapterLUID(Adapter, pLUID));
 }
 
 // ******************************
@@ -440,11 +440,11 @@ UINT m_IDirect3D9Ex::GetAdapterModeCache(THIS_ UINT Adapter, D3DFORMAT Format, b
 	UINT Count = 0;
 	if (!IsEx)
 	{
-		Count = ProxyInterface->GetAdapterModeCount(Adapter, Format);
+		Count = SAFE(ProxyInterface->GetAdapterModeCount(Adapter, Format));
 	}
 	else
 	{
-		Count = ProxyInterfaceEx->GetAdapterModeCountEx(Adapter, pFilter);
+		Count = SAFE(ProxyInterfaceEx->GetAdapterModeCountEx(Adapter, pFilter));
 	}
 
 	UINT RefreshRate = 0;
@@ -454,8 +454,8 @@ UINT m_IDirect3D9Ex::GetAdapterModeCache(THIS_ UINT Adapter, D3DFORMAT Format, b
 	for (UINT x = 0; x < Count; x++)
 	{
 		D3DDISPLAYMODEEX_CONVERT DisplayMode;
-		if (SUCCEEDED(!IsEx ? ProxyInterface->EnumAdapterModes(Adapter, Format, x, DisplayMode.Ptr()) :
-			ProxyInterfaceEx->EnumAdapterModesEx(Adapter, pFilter, x, DisplayMode.PtrEx())))
+		if (SUCCEEDED(!IsEx ? SAFE(ProxyInterface->EnumAdapterModes(Adapter, Format, x, DisplayMode.Ptr())) :
+			SAFE(ProxyInterfaceEx->EnumAdapterModesEx(Adapter, pFilter, x, DisplayMode.PtrEx()))))
 		{
 			if (Config.OverrideRefreshRate &&
 				(RefreshRate == 0 || std::abs((INT)Config.OverrideRefreshRate - (INT)DisplayMode.RefreshRate) < std::abs((INT)Config.OverrideRefreshRate - (INT)RefreshRate)))
@@ -528,7 +528,7 @@ HRESULT m_IDirect3D9Ex::CreateDeviceT(DEVICEDETAILS& DeviceDetails, UINT Adapter
 	// Get monitor handle
 	HMONITOR hMonitor = nullptr;
 	D3DADAPTER_IDENTIFIER9 Identifier = {};
-	if (SUCCEEDED(ProxyInterface->GetAdapterIdentifier(Adapter, 0, &Identifier)))
+	if (SUCCEEDED(SAFE(ProxyInterface->GetAdapterIdentifier(Adapter, 0, &Identifier))))
 	{
 		hMonitor = Utils::GetMonitorFromDeviceName(Identifier.DeviceName);
 	}
@@ -580,8 +580,8 @@ HRESULT m_IDirect3D9Ex::CreateDeviceT(DEVICEDETAILS& DeviceDetails, UINT Adapter
 					D3DFORMAT BufferFormat = (d3dpp.BackBufferFormat) ? d3dpp.BackBufferFormat : D3DFMT_X8R8G8B8;
 					D3DFORMAT StencilFormat = (d3dpp.AutoDepthStencilFormat) ? d3dpp.AutoDepthStencilFormat : D3DFMT_X8R8G8B8;
 
-					if (SUCCEEDED(ProxyInterface->CheckDeviceMultiSampleType(Adapter, DeviceType, BufferFormat, d3dpp.Windowed, Samples, &QualityLevels)) &&
-						SUCCEEDED(ProxyInterface->CheckDeviceMultiSampleType(Adapter, DeviceType, StencilFormat, d3dpp.Windowed, Samples, &QualityLevels)))
+					if (SUCCEEDED(SAFE(ProxyInterface->CheckDeviceMultiSampleType(Adapter, DeviceType, BufferFormat, d3dpp.Windowed, Samples, &QualityLevels))) &&
+						SUCCEEDED(SAFE(ProxyInterface->CheckDeviceMultiSampleType(Adapter, DeviceType, StencilFormat, d3dpp.Windowed, Samples, &QualityLevels))))
 					{
 						// Update Present Parameter for Multisample
 						UpdatePresentParameterForMultisample(p_d3dpp, Samples, (QualityLevels > 0) ? QualityLevels - 1 : 0);
@@ -654,11 +654,11 @@ void m_IDirect3D9Ex::LogAdapterNames()
 	}
 	RunOnce = false;
 #endif // DEBUG
-	UINT Adapter = ProxyInterface->GetAdapterCount();
+	UINT Adapter = SAFE(ProxyInterface->GetAdapterCount());
 	for (UINT x = 0; x < Adapter; x++)
 	{
 		D3DADAPTER_IDENTIFIER9 Identifier = {};
-		if (SUCCEEDED(ProxyInterface->GetAdapterIdentifier(x, NULL, &Identifier)))
+		if (SUCCEEDED(SAFE(ProxyInterface->GetAdapterIdentifier(x, NULL, &Identifier))))
 		{
 			Logging::Log() << __FUNCTION__ << " Adapter: " << x << " " << Identifier.DeviceName << " " << Identifier.Description;
 		}
@@ -675,7 +675,7 @@ bool m_IDirect3D9Ex::TestResolution(UINT Adapter, DWORD BackBufferWidth, DWORD B
 	if (Config.ForceExclusiveFullscreen && BackBufferWidth && BackBufferHeight)
 	{
 		// Enumerate modes for format XRGB
-		UINT modeCount = ProxyInterface->GetAdapterModeCount(Adapter, D3DFMT_X8R8G8B8);
+		UINT modeCount = SAFE(ProxyInterface->GetAdapterModeCount(Adapter, D3DFMT_X8R8G8B8));
 
 		D3DDISPLAYMODE d3ddispmode;
 
@@ -684,7 +684,7 @@ bool m_IDirect3D9Ex::TestResolution(UINT Adapter, DWORD BackBufferWidth, DWORD B
 		{
 			// Get display modes here
 			ZeroMemory(&d3ddispmode, sizeof(D3DDISPLAYMODE));
-			if (FAILED(ProxyInterface->EnumAdapterModes(Adapter, D3DFMT_X8R8G8B8, i, &d3ddispmode)))
+			if (FAILED(SAFE(ProxyInterface->EnumAdapterModes(Adapter, D3DFMT_X8R8G8B8, i, &d3ddispmode))))
 			{
 				LOG_LIMIT(100, __FUNCTION__ << " Error: EnumAdapterModes failed");
 				break;

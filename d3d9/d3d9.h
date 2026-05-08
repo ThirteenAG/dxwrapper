@@ -137,3 +137,4 @@ namespace D3d9Wrapper
 #include "IDirect3DVideoDevice9.h"
 #include "IDirect3DDXVADevice9.h"
 #include "ShadowSurfaceStorage.h"
+#include "wrap.h"

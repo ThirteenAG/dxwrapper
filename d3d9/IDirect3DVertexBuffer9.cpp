@@ -38,7 +38,7 @@ HRESULT m_IDirect3DVertexBuffer9::QueryInterface(THIS_ REFIID riid, void** ppvOb
 		return D3D_OK;
 	}
 
-	HRESULT hr = ProxyInterface->QueryInterface(riid, ppvObj);
+	HRESULT hr = SAFE(ProxyInterface->QueryInterface(riid, ppvObj));
 
 	if (SUCCEEDED(hr))
 	{
@@ -52,14 +52,14 @@ ULONG m_IDirect3DVertexBuffer9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return SAFE(ProxyInterface->AddRef());
 }
 
 ULONG m_IDirect3DVertexBuffer9::Release(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Release();
+	return SAFE(ProxyInterface->Release());
 }
 
 // ******************************
@@ -82,68 +82,68 @@ HRESULT m_IDirect3DVertexBuffer9::SetPrivateData(THIS_ REFGUID refguid, CONST vo
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags);
+	return SAFE(ProxyInterface->SetPrivateData(refguid, pData, SizeOfData, Flags));
 }
 
 HRESULT m_IDirect3DVertexBuffer9::GetPrivateData(THIS_ REFGUID refguid, void* pData, DWORD* pSizeOfData)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData);
+	return SAFE(ProxyInterface->GetPrivateData(refguid, pData, pSizeOfData));
 }
 
 HRESULT m_IDirect3DVertexBuffer9::FreePrivateData(THIS_ REFGUID refguid)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->FreePrivateData(refguid);
+	return SAFE(ProxyInterface->FreePrivateData(refguid));
 }
 
 DWORD m_IDirect3DVertexBuffer9::SetPriority(THIS_ DWORD PriorityNew)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPriority(PriorityNew);
+	return SAFE(ProxyInterface->SetPriority(PriorityNew));
 }
 
 DWORD m_IDirect3DVertexBuffer9::GetPriority(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPriority();
+	return SAFE(ProxyInterface->GetPriority());
 }
 
 void m_IDirect3DVertexBuffer9::PreLoad(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->PreLoad();
+	return SAFE(ProxyInterface->PreLoad());
 }
 
 D3DRESOURCETYPE m_IDirect3DVertexBuffer9::GetType(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetType();
+	return SAFE(ProxyInterface->GetType());
 }
 
 HRESULT m_IDirect3DVertexBuffer9::Lock(THIS_ UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+	return SAFE(ProxyInterface->Lock(OffsetToLock, SizeToLock, ppbData, Flags));
 }
 
 HRESULT m_IDirect3DVertexBuffer9::Unlock(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Unlock();
+	return SAFE(ProxyInterface->Unlock());
 }
 
 HRESULT m_IDirect3DVertexBuffer9::GetDesc(THIS_ D3DVERTEXBUFFER_DESC *pDesc)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDesc(pDesc);
+	return SAFE(ProxyInterface->GetDesc(pDesc));
 }

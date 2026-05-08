@@ -81,7 +81,7 @@ HRESULT m_IDirect3DDevice9Ex::QueryInterface(REFIID riid, void** ppvObj)
 		return E_NOINTERFACE;
 	}
 
-	HRESULT hr = ProxyInterface->QueryInterface(riid, ppvObj);
+	HRESULT hr = SAFE(ProxyInterface->QueryInterface(riid, ppvObj));
 
 	if (SUCCEEDED(hr))
 	{
@@ -97,7 +97,7 @@ ULONG m_IDirect3DDevice9Ex::AddRef()
 
 	_InterlockedIncrement(&RefCount);
 
-	return ProxyInterface->AddRef();
+	return SAFE(ProxyInterface->AddRef());
 }
 
 ULONG m_IDirect3DDevice9Ex::Release()
@@ -111,7 +111,7 @@ ULONG m_IDirect3DDevice9Ex::Release()
 	{
 		ScopedCriticalSection ThreadLock(&d9cs, Config.AntiAliasing || RequirePresentHandling());
 
-		ref = ProxyInterface->Release();
+		ref = SAFE(ProxyInterface->Release());
 
 		ULONG UsedRef = GetResourceRefCount();
 
@@ -131,7 +131,7 @@ ULONG m_IDirect3DDevice9Ex::Release()
 		// Teardown wrapper resources before destroying device
 		if (UsedRef > 0 && ref == UsedRef)
 		{
-			ProxyInterface->AddRef();
+			SAFE(ProxyInterface->AddRef());
 
 			ReleaseResources(false);
 
@@ -144,7 +144,7 @@ ULONG m_IDirect3DDevice9Ex::Release()
 
 			UsedRef = 0;
 
-			ref = ProxyInterface->Release();
+			ref = SAFE(ProxyInterface->Release());
 		}
 		else if (ref > 0 && ref < UsedRef)
 		{
@@ -203,21 +203,21 @@ HRESULT m_IDirect3DDevice9Ex::TestCooperativeLevel()
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->TestCooperativeLevel();
+	return SAFE(ProxyInterface->TestCooperativeLevel());
 }
 
 UINT m_IDirect3DDevice9Ex::GetAvailableTextureMem()
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetAvailableTextureMem();
+	return SAFE(ProxyInterface->GetAvailableTextureMem());
 }
 
 HRESULT m_IDirect3DDevice9Ex::EvictManagedResources(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->EvictManagedResources();
+	return SAFE(ProxyInterface->EvictManagedResources());
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetDirect3D(IDirect3D9** ppD3D9)
@@ -236,7 +236,7 @@ HRESULT m_IDirect3DDevice9Ex::GetDeviceCaps(D3DCAPS9* pCaps)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDeviceCaps(pCaps);
+	return SAFE(ProxyInterface->GetDeviceCaps(pCaps));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetDisplayMode(THIS_ UINT iSwapChain, D3DDISPLAYMODE* pMode)
@@ -265,14 +265,14 @@ HRESULT m_IDirect3DDevice9Ex::GetDisplayMode(THIS_ UINT iSwapChain, D3DDISPLAYMO
 		}
 	}
 
-	return ProxyInterface->GetDisplayMode(iSwapChain, pMode);
+	return SAFE(ProxyInterface->GetDisplayMode(iSwapChain, pMode));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetCreationParameters(D3DDEVICE_CREATION_PARAMETERS* pParameters)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetCreationParameters(pParameters);
+	return SAFE(ProxyInterface->GetCreationParameters(pParameters));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetCursorProperties(UINT XHotSpot, UINT YHotSpot, IDirect3DSurface9 *pCursorBitmap)
@@ -284,21 +284,21 @@ HRESULT m_IDirect3DDevice9Ex::SetCursorProperties(UINT XHotSpot, UINT YHotSpot, 
 		pCursorBitmap = static_cast<m_IDirect3DSurface9 *>(pCursorBitmap)->GetProxyInterface();
 	}
 
-	return ProxyInterface->SetCursorProperties(XHotSpot, YHotSpot, pCursorBitmap);
+	return SAFE(ProxyInterface->SetCursorProperties(XHotSpot, YHotSpot, pCursorBitmap));
 }
 
 void m_IDirect3DDevice9Ex::SetCursorPosition(int X, int Y, DWORD Flags)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetCursorPosition(X, Y, Flags);
+	return SAFE(ProxyInterface->SetCursorPosition(X, Y, Flags));
 }
 
 BOOL m_IDirect3DDevice9Ex::ShowCursor(BOOL bShow)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->ShowCursor(bShow);
+	return SAFE(ProxyInterface->ShowCursor(bShow));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CreateAdditionalSwapChain(D3DPRESENT_PARAMETERS *pPresentationParameters, IDirect3DSwapChain9 **ppSwapChain)
@@ -329,7 +329,7 @@ HRESULT m_IDirect3DDevice9Ex::CreateAdditionalSwapChain(D3DPRESENT_PARAMETERS *p
 		m_IDirect3D9Ex::UpdatePresentParameterForMultisample(p_d3dpp, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality);
 
 		// Create CwapChain
-		hr = ProxyInterface->CreateAdditionalSwapChain(p_d3dpp, ppSwapChain);
+		hr = SAFE(ProxyInterface->CreateAdditionalSwapChain(p_d3dpp, ppSwapChain));
 	}
 	
 	if (FAILED(hr))
@@ -342,7 +342,7 @@ HRESULT m_IDirect3DDevice9Ex::CreateAdditionalSwapChain(D3DPRESENT_PARAMETERS *p
 		}
 
 		// Create CwapChain
-		hr = ProxyInterface->CreateAdditionalSwapChain(p_d3dpp, ppSwapChain);
+		hr = SAFE(ProxyInterface->CreateAdditionalSwapChain(p_d3dpp, ppSwapChain));
 
 		if (SUCCEEDED(hr) && DeviceDetails.DeviceMultiSampleFlag)
 		{
@@ -392,7 +392,7 @@ HRESULT m_IDirect3DDevice9Ex::GetSwapChain(THIS_ UINT iSwapChain, IDirect3DSwapC
 
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetSwapChain(iSwapChain, ppSwapChain);
+	HRESULT hr = SAFE(ProxyInterface->GetSwapChain(iSwapChain, ppSwapChain));
 
 	if (SUCCEEDED(hr) && ppSwapChain)
 	{
@@ -415,7 +415,7 @@ UINT m_IDirect3DDevice9Ex::GetNumberOfSwapChains(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetNumberOfSwapChains();
+	return SAFE(ProxyInterface->GetNumberOfSwapChains());
 }
 
 HRESULT m_IDirect3DDevice9Ex::Reset(D3DPRESENT_PARAMETERS* pPresentationParameters)
@@ -455,7 +455,7 @@ HRESULT m_IDirect3DDevice9Ex::Present(CONST RECT* pSourceRect, CONST RECT* pDest
 
 	ApplyPrePresentFixes();
 
-	HRESULT hr = ProxyInterface->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+	HRESULT hr = SAFE(ProxyInterface->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion));
 
 	if (SUCCEEDED(hr))
 	{
@@ -498,7 +498,7 @@ HRESULT m_IDirect3DDevice9Ex::GetBackBuffer(THIS_ UINT iSwapChain, UINT iBackBuf
 		return D3D_OK;
 	}
 
-	HRESULT hr = ProxyInterface->GetBackBuffer(iSwapChain, iBackBuffer, Type, ppBackBuffer);
+	HRESULT hr = SAFE(ProxyInterface->GetBackBuffer(iSwapChain, iBackBuffer, Type, ppBackBuffer));
 
 	if (SUCCEEDED(hr) && ppBackBuffer)
 	{
@@ -512,14 +512,14 @@ HRESULT m_IDirect3DDevice9Ex::GetRasterStatus(THIS_ UINT iSwapChain, D3DRASTER_S
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetRasterStatus(iSwapChain, pRasterStatus);
+	return SAFE(ProxyInterface->GetRasterStatus(iSwapChain, pRasterStatus));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetDialogBoxMode(THIS_ BOOL bEnableDialogs)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetDialogBoxMode(bEnableDialogs);
+	return SAFE(ProxyInterface->SetDialogBoxMode(bEnableDialogs));
 }
 
 void m_IDirect3DDevice9Ex::SetGammaRamp(THIS_ UINT iSwapChain, DWORD Flags, CONST D3DGAMMARAMP* pRamp)
@@ -531,7 +531,7 @@ void m_IDirect3DDevice9Ex::SetGammaRamp(THIS_ UINT iSwapChain, DWORD Flags, CONS
 		if (iSwapChain)
 		{
 			LOG_LIMIT(3, __FUNCTION__ << " Warning: Gamma support for swapchains not implemented: " << iSwapChain);
-			return ProxyInterface->SetGammaRamp(iSwapChain, Flags, pRamp);
+			return SAFE(ProxyInterface->SetGammaRamp(iSwapChain, Flags, pRamp));
 		}
 
 		IsGammaSet = false;
@@ -546,7 +546,7 @@ void m_IDirect3DDevice9Ex::SetGammaRamp(THIS_ UINT iSwapChain, DWORD Flags, CONS
 		return;
 	}
 
-	return ProxyInterface->SetGammaRamp(iSwapChain, Flags, pRamp);
+	return SAFE(ProxyInterface->SetGammaRamp(iSwapChain, Flags, pRamp));
 }
 
 void m_IDirect3DDevice9Ex::GetGammaRamp(THIS_ UINT iSwapChain, D3DGAMMARAMP* pRamp)
@@ -558,14 +558,14 @@ void m_IDirect3DDevice9Ex::GetGammaRamp(THIS_ UINT iSwapChain, D3DGAMMARAMP* pRa
 		if (iSwapChain)
 		{
 			LOG_LIMIT(3, __FUNCTION__ << " Warning: Gamma support for swapchains not implemented: " << iSwapChain);
-			return ProxyInterface->GetGammaRamp(iSwapChain, pRamp);
+			return SAFE(ProxyInterface->GetGammaRamp(iSwapChain, pRamp));
 		}
 
 		memcpy(pRamp, &RampData, sizeof(D3DGAMMARAMP));
 		return;
 	}
 
-	return ProxyInterface->GetGammaRamp(iSwapChain, pRamp);
+	return SAFE(ProxyInterface->GetGammaRamp(iSwapChain, pRamp));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CreateTexture(THIS_ UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle)
@@ -591,7 +591,7 @@ HRESULT m_IDirect3DDevice9Ex::CreateTexture(THIS_ UINT Width, UINT Height, UINT 
 		Usage |= D3DUSAGE_DYNAMIC;
 	}
 
-	HRESULT hr = ProxyInterface->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
+	HRESULT hr = SAFE(ProxyInterface->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle));
 
 	if (SUCCEEDED(hr) && ppTexture)
 	{
@@ -615,7 +615,7 @@ HRESULT m_IDirect3DDevice9Ex::CreateVolumeTexture(THIS_ UINT Width, UINT Height,
 		Usage |= D3DUSAGE_DYNAMIC;
 	}
 
-	HRESULT hr = ProxyInterface->CreateVolumeTexture(Width, Height, Depth, Levels, Usage, Format, Pool, ppVolumeTexture, pSharedHandle);
+	HRESULT hr = SAFE(ProxyInterface->CreateVolumeTexture(Width, Height, Depth, Levels, Usage, Format, Pool, ppVolumeTexture, pSharedHandle));
 
 	if (SUCCEEDED(hr) && ppVolumeTexture)
 	{
@@ -645,7 +645,7 @@ HRESULT m_IDirect3DDevice9Ex::CreateCubeTexture(THIS_ UINT EdgeLength, UINT Leve
 		Format = (D3DFORMAT)Config.OverrideStencilFormat;
 	}
 
-	HRESULT hr = ProxyInterface->CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, ppCubeTexture, pSharedHandle);
+	HRESULT hr = SAFE(ProxyInterface->CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, ppCubeTexture, pSharedHandle));
 
 	if (SUCCEEDED(hr) && ppCubeTexture)
 	{
@@ -673,7 +673,7 @@ HRESULT m_IDirect3DDevice9Ex::CreateVertexBuffer(THIS_ UINT Length, DWORD Usage,
 		Pool = D3DPOOL_DEFAULT;
 	}
 
-	HRESULT hr = ProxyInterface->CreateVertexBuffer(Length, Usage, FVF, Pool, ppVertexBuffer, pSharedHandle);
+	HRESULT hr = SAFE(ProxyInterface->CreateVertexBuffer(Length, Usage, FVF, Pool, ppVertexBuffer, pSharedHandle));
 
 	if (SUCCEEDED(hr) && ppVertexBuffer)
 	{
@@ -696,7 +696,7 @@ HRESULT m_IDirect3DDevice9Ex::CreateIndexBuffer(THIS_ UINT Length, DWORD Usage, 
 		Pool = D3DPOOL_DEFAULT;
 	}
 
-	HRESULT hr = ProxyInterface->CreateIndexBuffer(Length, Usage, Format, Pool, ppIndexBuffer, pSharedHandle);
+	HRESULT hr = SAFE(ProxyInterface->CreateIndexBuffer(Length, Usage, Format, Pool, ppIndexBuffer, pSharedHandle));
 
 	if (SUCCEEDED(hr) && ppIndexBuffer)
 	{
@@ -727,12 +727,12 @@ HRESULT m_IDirect3DDevice9Ex::CreateRenderTarget(THIS_ UINT Width, UINT Height, 
 	// Try Multisampling
 	if (DeviceDetails.DeviceMultiSampleFlag && (MultiSample || !DeviceDetails.UseAppMultiSampleState))
 	{
-		hr = ProxyInterface->CreateRenderTarget(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, FALSE, ppSurface, pSharedHandle);
+		hr = SAFE(ProxyInterface->CreateRenderTarget(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, FALSE, ppSurface, pSharedHandle));
 	}
 
 	if (FAILED(hr))
 	{
-		hr = ProxyInterface->CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
+		hr = SAFE(ProxyInterface->CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle));
 
 		if (SUCCEEDED(hr) && DeviceDetails.DeviceMultiSampleFlag)
 		{
@@ -777,12 +777,12 @@ HRESULT m_IDirect3DDevice9Ex::CreateDepthStencilSurface(THIS_ UINT Width, UINT H
 	// Try Multisample
 	if (DeviceDetails.DeviceMultiSampleFlag && (MultiSample || !DeviceDetails.UseAppMultiSampleState))
 	{
-		hr = ProxyInterface->CreateDepthStencilSurface(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, TRUE, ppSurface, pSharedHandle);
+		hr = SAFE(ProxyInterface->CreateDepthStencilSurface(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, TRUE, ppSurface, pSharedHandle));
 	}
 
 	if (FAILED(hr))
 	{
-		hr = ProxyInterface->CreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard, ppSurface, pSharedHandle);
+		hr = SAFE(ProxyInterface->CreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard, ppSurface, pSharedHandle));
 
 		if (SUCCEEDED(hr) && DeviceDetails.DeviceMultiSampleFlag)
 		{
@@ -818,7 +818,7 @@ HRESULT m_IDirect3DDevice9Ex::UpdateSurface(THIS_ IDirect3DSurface9* pSourceSurf
 		pDestSurface = m_pDestSurface->GetNonMultiSampledSurface(0);
 	}
 
-	HRESULT hr = ProxyInterface->UpdateSurface(pSourceSurface, pSourceRect, pDestSurface, pDestPoint);
+	HRESULT hr = SAFE(ProxyInterface->UpdateSurface(pSourceSurface, pSourceRect, pDestSurface, pDestPoint));
 
 	if (SUCCEEDED(hr) && m_pDestSurface)
 	{
@@ -869,7 +869,7 @@ HRESULT m_IDirect3DDevice9Ex::UpdateTexture(IDirect3DBaseTexture9* pSourceTextur
 		}
 	}
 
-	return ProxyInterface->UpdateTexture(pSourceTexture, pDestinationTexture);
+	return SAFE(ProxyInterface->UpdateTexture(pSourceTexture, pDestinationTexture));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetRenderTargetData(THIS_ IDirect3DSurface9* pRenderTarget, IDirect3DSurface9* pDestSurface)
@@ -888,7 +888,7 @@ HRESULT m_IDirect3DDevice9Ex::GetRenderTargetData(THIS_ IDirect3DSurface9* pRend
 		pDestSurface = static_cast<m_IDirect3DSurface9*>(pDestSurface)->GetProxyInterface();
 	}
 
-	return ProxyInterface->GetRenderTargetData(pRenderTarget, pDestSurface);
+	return SAFE(ProxyInterface->GetRenderTargetData(pRenderTarget, pDestSurface));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetFrontBufferData(THIS_ UINT iSwapChain, IDirect3DSurface9* pDestSurface)
@@ -906,7 +906,7 @@ HRESULT m_IDirect3DDevice9Ex::GetFrontBufferData(THIS_ UINT iSwapChain, IDirect3
 	}
 	else
 	{
-		return ProxyInterface->GetFrontBufferData(iSwapChain, pDestSurface);
+		return SAFE(ProxyInterface->GetFrontBufferData(iSwapChain, pDestSurface));
 	}
 }
 
@@ -926,7 +926,7 @@ HRESULT m_IDirect3DDevice9Ex::StretchRect(THIS_ IDirect3DSurface9* pSourceSurfac
 		pDestSurface = m_pDestSurface->GetNonMultiSampledSurface(0);
 	}
 
-	HRESULT hr = ProxyInterface->StretchRect(pSourceSurface, pSourceRect, pDestSurface, pDestRect, Filter);
+	HRESULT hr = SAFE(ProxyInterface->StretchRect(pSourceSurface, pSourceRect, pDestSurface, pDestRect, Filter));
 
 	if (SUCCEEDED(hr) && m_pDestSurface)
 	{
@@ -946,7 +946,7 @@ HRESULT m_IDirect3DDevice9Ex::ColorFill(THIS_ IDirect3DSurface9* pSurface, CONST
 		pSurface = m_pSurface->GetNonMultiSampledSurface(0);
 	}
 
-	HRESULT hr = ProxyInterface->ColorFill(pSurface, pRect, color);
+	HRESULT hr = SAFE(ProxyInterface->ColorFill(pSurface, pRect, color));
 
 	if (SUCCEEDED(hr) && m_pSurface)
 	{
@@ -968,11 +968,11 @@ HRESULT m_IDirect3DDevice9Ex::CreateOffscreenPlainSurface(THIS_ UINT Width, UINT
 		}
 	}
 
-	HRESULT hr = ProxyInterface->CreateOffscreenPlainSurface(Width, Height, Format, Pool, ppSurface, pSharedHandle);
+	HRESULT hr = SAFE(ProxyInterface->CreateOffscreenPlainSurface(Width, Height, Format, Pool, ppSurface, pSharedHandle));
 
 	if (FAILED(hr) && IsForcingD3d9to9Ex() && Width < 64 && Pool == D3DPOOL_SYSTEMMEM)
 	{
-		hr = ProxyInterface->CreateOffscreenPlainSurface(Width, Height, Format, D3DPOOL_DEFAULT, ppSurface, pSharedHandle);
+		hr = SAFE(ProxyInterface->CreateOffscreenPlainSurface(Width, Height, Format, D3DPOOL_DEFAULT, ppSurface, pSharedHandle));
 	}
 
 	if (SUCCEEDED(hr) && ppSurface)
@@ -1008,7 +1008,7 @@ HRESULT m_IDirect3DDevice9Ex::SetRenderTarget(THIS_ DWORD RenderTargetIndex, IDi
 		}
 	}
 
-	HRESULT hr = ProxyInterface->SetRenderTarget(RenderTargetIndex, pRenderTarget);
+	HRESULT hr = SAFE(ProxyInterface->SetRenderTarget(RenderTargetIndex, pRenderTarget));
 
 	if (SUCCEEDED(hr))
 	{
@@ -1032,7 +1032,7 @@ HRESULT m_IDirect3DDevice9Ex::GetRenderTarget(THIS_ DWORD RenderTargetIndex, IDi
 
 	ScopedCriticalSection ThreadLock(&d9cs, RequirePresentHandling());
 
-	HRESULT hr = ProxyInterface->GetRenderTarget(RenderTargetIndex, ppRenderTarget);
+	HRESULT hr = SAFE(ProxyInterface->GetRenderTarget(RenderTargetIndex, ppRenderTarget));
 
 	if (SUCCEEDED(hr) && ppRenderTarget)
 	{
@@ -1071,7 +1071,7 @@ HRESULT m_IDirect3DDevice9Ex::SetDepthStencilSurface(THIS_ IDirect3DSurface9* pN
 		pNewZStencil = pSurface->GetProxyInterface();
 	}
 
-	HRESULT hr = ProxyInterface->SetDepthStencilSurface(pNewZStencil);
+	HRESULT hr = SAFE(ProxyInterface->SetDepthStencilSurface(pNewZStencil));
 
 	if (SUCCEEDED(hr))
 	{
@@ -1095,7 +1095,7 @@ HRESULT m_IDirect3DDevice9Ex::GetDepthStencilSurface(IDirect3DSurface9** ppZSten
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetDepthStencilSurface(ppZStencilSurface);
+	HRESULT hr = SAFE(ProxyInterface->GetDepthStencilSurface(ppZStencilSurface));
 
 	if (SUCCEEDED(hr) && ppZStencilSurface)
 	{
@@ -1129,7 +1129,7 @@ HRESULT m_IDirect3DDevice9Ex::BeginScene()
 		return D3D_OK;
 	}
 
-	HRESULT hr = ProxyInterface->BeginScene();
+	HRESULT hr = SAFE(ProxyInterface->BeginScene());
 
 	if (SUCCEEDED(hr))
 	{
@@ -1140,7 +1140,7 @@ HRESULT m_IDirect3DDevice9Ex::BeginScene()
 		{
 			for (UINT x = 0; x < D3DHAL_TSS_MAXSTAGES; x++)
 			{
-				ProxyInterface->SetSamplerState(x, D3DSAMP_MAXANISOTROPY, MaxAnisotropy);
+				SAFE(ProxyInterface->SetSamplerState(x, D3DSAMP_MAXANISOTROPY, MaxAnisotropy));
 			}
 		}
 
@@ -1149,18 +1149,18 @@ HRESULT m_IDirect3DDevice9Ex::BeginScene()
 		{
 			if (DeviceDetails.SetMultiSampleState && !DeviceDetails.UseAppMultiSampleState)
 			{
-				ProxyInterface->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+				SAFE(ProxyInterface->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE));
 			}
 			if (DeviceDetails.SetSSAA)
 			{
-				ProxyInterface->SetRenderState(D3DRS_ADAPTIVETESS_Y, MAKEFOURCC('S', 'S', 'A', 'A'));
+				SAFE(ProxyInterface->SetRenderState(D3DRS_ADAPTIVETESS_Y, MAKEFOURCC('S', 'S', 'A', 'A')));
 			}
 			if (DeviceDetails.SetATOC)
 			{
-				ProxyInterface->SetRenderState(D3DRS_ADAPTIVETESS_Y, MAKEFOURCC('A', 'T', 'O', 'C'));
+				SAFE(ProxyInterface->SetRenderState(D3DRS_ADAPTIVETESS_Y, MAKEFOURCC('A', 'T', 'O', 'C')));
 				if (Config.EnableMultisamplingATOC == 2)
 				{
-					ProxyInterface->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+					SAFE(ProxyInterface->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE));
 				}
 			}
 		}
@@ -1187,7 +1187,7 @@ HRESULT m_IDirect3DDevice9Ex::EndScene()
 
 	BeforeEndScene();
 
-	return ProxyInterface->EndScene();
+	return SAFE(ProxyInterface->EndScene());
 }
 
 HRESULT m_IDirect3DDevice9Ex::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
@@ -1204,14 +1204,14 @@ HRESULT m_IDirect3DDevice9Ex::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Fl
 		}
 	}
 
-	return ProxyInterface->Clear(Count, pRects, Flags, Color, Z, Stencil);
+	return SAFE(ProxyInterface->Clear(Count, pRects, Flags, Color, Z, Stencil));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D3DMATRIX* pMatrix)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ") State: " << State;
 
-	HRESULT hr = ProxyInterface->SetTransform(State, pMatrix);
+	HRESULT hr = SAFE(ProxyInterface->SetTransform(State, pMatrix));
 
 	if (SUCCEEDED(hr))
 	{
@@ -1229,70 +1229,70 @@ HRESULT m_IDirect3DDevice9Ex::GetTransform(D3DTRANSFORMSTATETYPE State, D3DMATRI
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetTransform(State, pMatrix);
+	return SAFE(ProxyInterface->GetTransform(State, pMatrix));
 }
 
 HRESULT m_IDirect3DDevice9Ex::MultiplyTransform(D3DTRANSFORMSTATETYPE State, CONST D3DMATRIX* pMatrix)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->MultiplyTransform(State, pMatrix);
+	return SAFE(ProxyInterface->MultiplyTransform(State, pMatrix));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetViewport(CONST D3DVIEWPORT9* pViewport)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetViewport(pViewport);
+	return SAFE(ProxyInterface->SetViewport(pViewport));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetViewport(D3DVIEWPORT9* pViewport)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetViewport(pViewport);
+	return SAFE(ProxyInterface->GetViewport(pViewport));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetMaterial(CONST D3DMATERIAL9* pMaterial)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetMaterial(pMaterial);
+	return SAFE(ProxyInterface->SetMaterial(pMaterial));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetMaterial(D3DMATERIAL9* pMaterial)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetMaterial(pMaterial);
+	return SAFE(ProxyInterface->GetMaterial(pMaterial));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetLight(DWORD Index, CONST D3DLIGHT9* pLight)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetLight(Index, pLight);
+	return SAFE(ProxyInterface->SetLight(Index, pLight));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetLight(DWORD Index, D3DLIGHT9* pLight)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetLight(Index, pLight);
+	return SAFE(ProxyInterface->GetLight(Index, pLight));
 }
 
 HRESULT m_IDirect3DDevice9Ex::LightEnable(DWORD LightIndex, BOOL bEnable)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->LightEnable(LightIndex, bEnable);
+	return SAFE(ProxyInterface->LightEnable(LightIndex, bEnable));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetLightEnable(DWORD Index, BOOL* pEnable)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetLightEnable(Index, pEnable);
+	return SAFE(ProxyInterface->GetLightEnable(Index, pEnable));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetClipPlane(DWORD Index, CONST float* pPlane)
@@ -1314,7 +1314,7 @@ HRESULT m_IDirect3DDevice9Ex::SetClipPlane(DWORD Index, CONST float* pPlane)
 		return D3D_OK;
 	}
 
-	return ProxyInterface->SetClipPlane(Index, pPlane);
+	return SAFE(ProxyInterface->SetClipPlane(Index, pPlane));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetClipPlane(DWORD Index, float* pPlane)
@@ -1334,7 +1334,7 @@ HRESULT m_IDirect3DDevice9Ex::GetClipPlane(DWORD Index, float* pPlane)
 		return D3D_OK;
 	}
 
-	return ProxyInterface->GetClipPlane(Index, pPlane);
+	return SAFE(ProxyInterface->GetClipPlane(Index, pPlane));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
@@ -1375,7 +1375,7 @@ HRESULT m_IDirect3DDevice9Ex::SetRenderState(D3DRENDERSTATETYPE State, DWORD Val
 		}
 	}
 
-	HRESULT hr = ProxyInterface->SetRenderState(State, Value);
+	HRESULT hr = SAFE(ProxyInterface->SetRenderState(State, Value));
 
 	// CacheClipPlane
 	if (SUCCEEDED(hr) && State == D3DRS_CLIPPLANEENABLE)
@@ -1390,14 +1390,14 @@ HRESULT m_IDirect3DDevice9Ex::GetRenderState(D3DRENDERSTATETYPE State, DWORD* pV
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetRenderState(State, pValue);
+	return SAFE(ProxyInterface->GetRenderState(State, pValue));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CreateStateBlock(THIS_ D3DSTATEBLOCKTYPE Type, IDirect3DStateBlock9** ppSB)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->CreateStateBlock(Type, ppSB);
+	HRESULT hr = SAFE(ProxyInterface->CreateStateBlock(Type, ppSB));
 
 	if (SUCCEEDED(hr) && ppSB)
 	{
@@ -1422,14 +1422,14 @@ HRESULT m_IDirect3DDevice9Ex::BeginStateBlock()
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->BeginStateBlock();
+	return SAFE(ProxyInterface->BeginStateBlock());
 }
 
 HRESULT m_IDirect3DDevice9Ex::EndStateBlock(THIS_ IDirect3DStateBlock9** ppSB)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->EndStateBlock(ppSB);
+	HRESULT hr = SAFE(ProxyInterface->EndStateBlock(ppSB));
 
 	if (SUCCEEDED(hr) && ppSB)
 	{
@@ -1450,14 +1450,14 @@ HRESULT m_IDirect3DDevice9Ex::SetClipStatus(CONST D3DCLIPSTATUS9 *pClipStatus)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetClipStatus(pClipStatus);
+	return SAFE(ProxyInterface->SetClipStatus(pClipStatus));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetClipStatus(D3DCLIPSTATUS9* pClipStatus)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetClipStatus(pClipStatus);
+	return SAFE(ProxyInterface->GetClipStatus(pClipStatus));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetTexture(DWORD Stage, IDirect3DBaseTexture9** ppTexture)
@@ -1473,7 +1473,7 @@ HRESULT m_IDirect3DDevice9Ex::GetTexture(DWORD Stage, IDirect3DBaseTexture9** pp
 		return D3D_OK;
 	}
 
-	HRESULT hr = ProxyInterface->GetTexture(Stage, ppTexture);
+	HRESULT hr = SAFE(ProxyInterface->GetTexture(Stage, ppTexture));
 
 	if (SUCCEEDED(hr) && ppTexture && *ppTexture)
 	{
@@ -1520,7 +1520,7 @@ HRESULT m_IDirect3DDevice9Ex::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTe
 		}
 	}
 
-	HRESULT hr = ProxyInterface->SetTexture(Stage, pTexture);
+	HRESULT hr = SAFE(ProxyInterface->SetTexture(Stage, pTexture));
 
 	if (SUCCEEDED(hr))
 	{
@@ -1542,14 +1542,14 @@ HRESULT m_IDirect3DDevice9Ex::GetTextureStageState(DWORD Stage, D3DTEXTURESTAGES
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetTextureStageState(Stage, Type, pValue);
+	return SAFE(ProxyInterface->GetTextureStageState(Stage, Type, pValue));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetTextureStageState(DWORD Stage, D3DTEXTURESTAGESTATETYPE Type, DWORD Value)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ") Stage: " << Stage << " Type: " << Type << " Value: " << Value;
 
-	HRESULT hr = ProxyInterface->SetTextureStageState(Stage, Type, Value);
+	HRESULT hr = SAFE(ProxyInterface->SetTextureStageState(Stage, Type, Value));
 
 	if (SUCCEEDED(hr))
 	{
@@ -1573,7 +1573,7 @@ HRESULT m_IDirect3DDevice9Ex::GetSamplerState(THIS_ DWORD Sampler, D3DSAMPLERSTA
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetSamplerState(Sampler, Type, pValue);
+	return SAFE(ProxyInterface->GetSamplerState(Sampler, Type, pValue));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetSamplerState(THIS_ DWORD Sampler, D3DSAMPLERSTATETYPE Type, DWORD Value)
@@ -1588,12 +1588,12 @@ HRESULT m_IDirect3DDevice9Ex::SetSamplerState(THIS_ DWORD Sampler, D3DSAMPLERSTA
 			if (Value == D3DTEXF_NONE || Value == D3DTEXF_POINT)
 			{
 				DeviceDetails.SetMultiSampleState = false;
-				ProxyInterface->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+				SAFE(ProxyInterface->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE));
 			}
 			else
 			{
 				DeviceDetails.SetMultiSampleState = true;
-				ProxyInterface->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+				SAFE(ProxyInterface->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE));
 			}
 		}
 	}
@@ -1603,14 +1603,14 @@ HRESULT m_IDirect3DDevice9Ex::SetSamplerState(THIS_ DWORD Sampler, D3DSAMPLERSTA
 	{
 		if (Type == D3DSAMP_MAXANISOTROPY)
 		{
-			if (SUCCEEDED(ProxyInterface->SetSamplerState(Sampler, D3DSAMP_MAXANISOTROPY, MaxAnisotropy)))
+			if (SUCCEEDED(SAFE(ProxyInterface->SetSamplerState(Sampler, D3DSAMP_MAXANISOTROPY, MaxAnisotropy))))
 			{
 				return D3D_OK;
 			}
 		}
 		else if (((Type == D3DSAMP_MINFILTER && AnisotropyMin) || (Type == D3DSAMP_MAGFILTER && AnisotropyMag)) && Value != D3DTEXF_NONE && Value != D3DTEXF_POINT)
 		{
-			if (SUCCEEDED(ProxyInterface->SetSamplerState(Sampler, Type, D3DTEXF_ANISOTROPIC)))
+			if (SUCCEEDED(SAFE(ProxyInterface->SetSamplerState(Sampler, Type, D3DTEXF_ANISOTROPIC))))
 			{
 				LOG_ONCE("Setting Anisotropic Filtering at " << MaxAnisotropy << "x");
 				return D3D_OK;
@@ -1618,84 +1618,84 @@ HRESULT m_IDirect3DDevice9Ex::SetSamplerState(THIS_ DWORD Sampler, D3DSAMPLERSTA
 		}
 	}
 
-	return ProxyInterface->SetSamplerState(Sampler, Type, Value);
+	return SAFE(ProxyInterface->SetSamplerState(Sampler, Type, Value));
 }
 
 HRESULT m_IDirect3DDevice9Ex::ValidateDevice(DWORD* pNumPasses)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->ValidateDevice(pNumPasses);
+	return SAFE(ProxyInterface->ValidateDevice(pNumPasses));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetPaletteEntries(UINT PaletteNumber, CONST PALETTEENTRY* pEntries)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPaletteEntries(PaletteNumber, pEntries);
+	return SAFE(ProxyInterface->SetPaletteEntries(PaletteNumber, pEntries));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetPaletteEntries(UINT PaletteNumber, PALETTEENTRY* pEntries)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPaletteEntries(PaletteNumber, pEntries);
+	return SAFE(ProxyInterface->GetPaletteEntries(PaletteNumber, pEntries));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetCurrentTexturePalette(UINT PaletteNumber)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetCurrentTexturePalette(PaletteNumber);
+	return SAFE(ProxyInterface->SetCurrentTexturePalette(PaletteNumber));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetCurrentTexturePalette(UINT* pPaletteNumber)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetCurrentTexturePalette(pPaletteNumber);
+	return SAFE(ProxyInterface->GetCurrentTexturePalette(pPaletteNumber));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetScissorRect(THIS_ CONST RECT* pRect)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetScissorRect(pRect);
+	return SAFE(ProxyInterface->SetScissorRect(pRect));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetScissorRect(THIS_ RECT* pRect)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetScissorRect(pRect);
+	return SAFE(ProxyInterface->GetScissorRect(pRect));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetSoftwareVertexProcessing(THIS_ BOOL bSoftware)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetSoftwareVertexProcessing(bSoftware);
+	return SAFE(ProxyInterface->SetSoftwareVertexProcessing(bSoftware));
 }
 
 int m_IDirect3DDevice9Ex::GetSoftwareVertexProcessing(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetSoftwareVertexProcessing();
+	return SAFE(ProxyInterface->GetSoftwareVertexProcessing());
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetNPatchMode(THIS_ float nSegments)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetNPatchMode(nSegments);
+	return SAFE(ProxyInterface->SetNPatchMode(nSegments));
 }
 
 float m_IDirect3DDevice9Ex::GetNPatchMode(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetNPatchMode();
+	return SAFE(ProxyInterface->GetNPatchMode());
 }
 
 HRESULT m_IDirect3DDevice9Ex::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount)
@@ -1704,7 +1704,7 @@ HRESULT m_IDirect3DDevice9Ex::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT
 
 	ApplyPreDrawFixes();
 
-	HRESULT hr = ProxyInterface->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
+	HRESULT hr = SAFE(ProxyInterface->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount));
 
 	ApplyPostDrawFixes();
 
@@ -1717,7 +1717,7 @@ HRESULT m_IDirect3DDevice9Ex::DrawIndexedPrimitive(THIS_ D3DPRIMITIVETYPE Type, 
 
 	ApplyPreDrawFixes();
 
-	HRESULT hr = ProxyInterface->DrawIndexedPrimitive(Type, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+	HRESULT hr = SAFE(ProxyInterface->DrawIndexedPrimitive(Type, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount));
 
 	ApplyPostDrawFixes();
 
@@ -1730,7 +1730,7 @@ HRESULT m_IDirect3DDevice9Ex::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UI
 
 	ApplyPreDrawFixes();
 
-	HRESULT hr = ProxyInterface->DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride);
+	HRESULT hr = SAFE(ProxyInterface->DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride));
 
 	ApplyPostDrawFixes();
 
@@ -1743,7 +1743,7 @@ HRESULT m_IDirect3DDevice9Ex::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE PrimitiveT
 
 	ApplyPreDrawFixes();
 
-	HRESULT hr = ProxyInterface->DrawIndexedPrimitiveUP(PrimitiveType, MinIndex, NumVertices, PrimitiveCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride);
+	HRESULT hr = SAFE(ProxyInterface->DrawIndexedPrimitiveUP(PrimitiveType, MinIndex, NumVertices, PrimitiveCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride));
 
 	ApplyPostDrawFixes();
 
@@ -1764,14 +1764,14 @@ HRESULT m_IDirect3DDevice9Ex::ProcessVertices(THIS_ UINT SrcStartIndex, UINT Des
 		pVertexDecl = static_cast<m_IDirect3DVertexDeclaration9*>(pVertexDecl)->GetProxyInterface();
 	}
 
-	return ProxyInterface->ProcessVertices(SrcStartIndex, DestIndex, VertexCount, pDestBuffer, pVertexDecl, Flags);
+	return SAFE(ProxyInterface->ProcessVertices(SrcStartIndex, DestIndex, VertexCount, pDestBuffer, pVertexDecl, Flags));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CreateVertexDeclaration(THIS_ CONST D3DVERTEXELEMENT9* pVertexElements, IDirect3DVertexDeclaration9** ppDecl)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->CreateVertexDeclaration(pVertexElements, ppDecl);
+	HRESULT hr = SAFE(ProxyInterface->CreateVertexDeclaration(pVertexElements, ppDecl));
 
 	if (SUCCEEDED(hr) && ppDecl)
 	{
@@ -1794,14 +1794,14 @@ HRESULT m_IDirect3DDevice9Ex::SetVertexDeclaration(THIS_ IDirect3DVertexDeclarat
 		pDecl = static_cast<m_IDirect3DVertexDeclaration9*>(pDecl)->GetProxyInterface();
 	}
 
-	return ProxyInterface->SetVertexDeclaration(pDecl);
+	return SAFE(ProxyInterface->SetVertexDeclaration(pDecl));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetVertexDeclaration(THIS_ IDirect3DVertexDeclaration9** ppDecl)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetVertexDeclaration(ppDecl);
+	HRESULT hr = SAFE(ProxyInterface->GetVertexDeclaration(ppDecl));
 
 	if (SUCCEEDED(hr) && ppDecl)
 	{
@@ -1815,21 +1815,21 @@ HRESULT m_IDirect3DDevice9Ex::SetFVF(THIS_ DWORD FVF)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetFVF(FVF);
+	return SAFE(ProxyInterface->SetFVF(FVF));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetFVF(THIS_ DWORD* pFVF)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetFVF(pFVF);
+	return SAFE(ProxyInterface->GetFVF(pFVF));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CreateVertexShader(THIS_ CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->CreateVertexShader(pFunction, ppShader);
+	HRESULT hr = SAFE(ProxyInterface->CreateVertexShader(pFunction, ppShader));
 
 	if (SUCCEEDED(hr) && ppShader)
 	{
@@ -1852,14 +1852,14 @@ HRESULT m_IDirect3DDevice9Ex::SetVertexShader(THIS_ IDirect3DVertexShader9* pSha
 		pShader = static_cast<m_IDirect3DVertexShader9*>(pShader)->GetProxyInterface();
 	}
 
-	return ProxyInterface->SetVertexShader(pShader);
+	return SAFE(ProxyInterface->SetVertexShader(pShader));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetVertexShader(THIS_ IDirect3DVertexShader9** ppShader)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetVertexShader(ppShader);
+	HRESULT hr = SAFE(ProxyInterface->GetVertexShader(ppShader));
 
 	if (SUCCEEDED(hr) && ppShader)
 	{
@@ -1873,42 +1873,42 @@ HRESULT m_IDirect3DDevice9Ex::SetVertexShaderConstantF(THIS_ UINT StartRegister,
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetVertexShaderConstantF(StartRegister, pConstantData, Vector4fCount);
+	return SAFE(ProxyInterface->SetVertexShaderConstantF(StartRegister, pConstantData, Vector4fCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetVertexShaderConstantF(THIS_ UINT StartRegister, float* pConstantData, UINT Vector4fCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetVertexShaderConstantF(StartRegister, pConstantData, Vector4fCount);
+	return SAFE(ProxyInterface->GetVertexShaderConstantF(StartRegister, pConstantData, Vector4fCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetVertexShaderConstantI(THIS_ UINT StartRegister, CONST int* pConstantData, UINT Vector4iCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetVertexShaderConstantI(StartRegister, pConstantData, Vector4iCount);
+	return SAFE(ProxyInterface->SetVertexShaderConstantI(StartRegister, pConstantData, Vector4iCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetVertexShaderConstantI(THIS_ UINT StartRegister, int* pConstantData, UINT Vector4iCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetVertexShaderConstantI(StartRegister, pConstantData, Vector4iCount);
+	return SAFE(ProxyInterface->GetVertexShaderConstantI(StartRegister, pConstantData, Vector4iCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetVertexShaderConstantB(THIS_ UINT StartRegister, CONST BOOL* pConstantData, UINT  BoolCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetVertexShaderConstantB(StartRegister, pConstantData, BoolCount);
+	return SAFE(ProxyInterface->SetVertexShaderConstantB(StartRegister, pConstantData, BoolCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetVertexShaderConstantB(THIS_ UINT StartRegister, BOOL* pConstantData, UINT BoolCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetVertexShaderConstantB(StartRegister, pConstantData, BoolCount);
+	return SAFE(ProxyInterface->GetVertexShaderConstantB(StartRegister, pConstantData, BoolCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetStreamSource(THIS_ UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT Stride)
@@ -1920,14 +1920,14 @@ HRESULT m_IDirect3DDevice9Ex::SetStreamSource(THIS_ UINT StreamNumber, IDirect3D
 		pStreamData = static_cast<m_IDirect3DVertexBuffer9*>(pStreamData)->GetProxyInterface();
 	}
 
-	return ProxyInterface->SetStreamSource(StreamNumber, pStreamData, OffsetInBytes, Stride);
+	return SAFE(ProxyInterface->SetStreamSource(StreamNumber, pStreamData, OffsetInBytes, Stride));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetStreamSource(THIS_ UINT StreamNumber, IDirect3DVertexBuffer9** ppStreamData, UINT* OffsetInBytes, UINT* pStride)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetStreamSource(StreamNumber, ppStreamData, OffsetInBytes, pStride);
+	HRESULT hr = SAFE(ProxyInterface->GetStreamSource(StreamNumber, ppStreamData, OffsetInBytes, pStride));
 
 	if (SUCCEEDED(hr) && ppStreamData)
 	{
@@ -1941,14 +1941,14 @@ HRESULT m_IDirect3DDevice9Ex::SetStreamSourceFreq(THIS_ UINT StreamNumber, UINT 
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetStreamSourceFreq(StreamNumber, Divider);
+	return SAFE(ProxyInterface->SetStreamSourceFreq(StreamNumber, Divider));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetStreamSourceFreq(THIS_ UINT StreamNumber, UINT* Divider)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetStreamSourceFreq(StreamNumber, Divider);
+	return SAFE(ProxyInterface->GetStreamSourceFreq(StreamNumber, Divider));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetIndices(THIS_ IDirect3DIndexBuffer9* pIndexData)
@@ -1960,14 +1960,14 @@ HRESULT m_IDirect3DDevice9Ex::SetIndices(THIS_ IDirect3DIndexBuffer9* pIndexData
 		pIndexData = static_cast<m_IDirect3DIndexBuffer9*>(pIndexData)->GetProxyInterface();
 	}
 
-	return ProxyInterface->SetIndices(pIndexData);
+	return SAFE(ProxyInterface->SetIndices(pIndexData));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetIndices(THIS_ IDirect3DIndexBuffer9** ppIndexData)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetIndices(ppIndexData);
+	HRESULT hr = SAFE(ProxyInterface->GetIndices(ppIndexData));
 
 	if (SUCCEEDED(hr) && ppIndexData)
 	{
@@ -1981,7 +1981,7 @@ HRESULT m_IDirect3DDevice9Ex::CreatePixelShader(THIS_ CONST DWORD* pFunction, ID
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->CreatePixelShader(pFunction, ppShader);
+	HRESULT hr = SAFE(ProxyInterface->CreatePixelShader(pFunction, ppShader));
 
 	if (SUCCEEDED(hr) && ppShader)
 	{
@@ -2004,14 +2004,14 @@ HRESULT m_IDirect3DDevice9Ex::SetPixelShader(THIS_ IDirect3DPixelShader9* pShade
 		pShader = static_cast<m_IDirect3DPixelShader9*>(pShader)->GetProxyInterface();
 	}
 
-	return ProxyInterface->SetPixelShader(pShader);
+	return SAFE(ProxyInterface->SetPixelShader(pShader));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetPixelShader(THIS_ IDirect3DPixelShader9** ppShader)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->GetPixelShader(ppShader);
+	HRESULT hr = SAFE(ProxyInterface->GetPixelShader(ppShader));
 
 	if (SUCCEEDED(hr) && ppShader)
 	{
@@ -2025,70 +2025,70 @@ HRESULT m_IDirect3DDevice9Ex::SetPixelShaderConstantF(THIS_ UINT StartRegister, 
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPixelShaderConstantF(StartRegister, pConstantData, Vector4fCount);
+	return SAFE(ProxyInterface->SetPixelShaderConstantF(StartRegister, pConstantData, Vector4fCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetPixelShaderConstantF(THIS_ UINT StartRegister, float* pConstantData, UINT Vector4fCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPixelShaderConstantF(StartRegister, pConstantData, Vector4fCount);
+	return SAFE(ProxyInterface->GetPixelShaderConstantF(StartRegister, pConstantData, Vector4fCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetPixelShaderConstantI(THIS_ UINT StartRegister, CONST int* pConstantData, UINT Vector4iCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPixelShaderConstantI(StartRegister, pConstantData, Vector4iCount);
+	return SAFE(ProxyInterface->SetPixelShaderConstantI(StartRegister, pConstantData, Vector4iCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetPixelShaderConstantI(THIS_ UINT StartRegister, int* pConstantData, UINT Vector4iCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPixelShaderConstantI(StartRegister, pConstantData, Vector4iCount);
+	return SAFE(ProxyInterface->GetPixelShaderConstantI(StartRegister, pConstantData, Vector4iCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetPixelShaderConstantB(THIS_ UINT StartRegister, CONST BOOL* pConstantData, UINT  BoolCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->SetPixelShaderConstantB(StartRegister, pConstantData, BoolCount);
+	return SAFE(ProxyInterface->SetPixelShaderConstantB(StartRegister, pConstantData, BoolCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetPixelShaderConstantB(THIS_ UINT StartRegister, BOOL* pConstantData, UINT BoolCount)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetPixelShaderConstantB(StartRegister, pConstantData, BoolCount);
+	return SAFE(ProxyInterface->GetPixelShaderConstantB(StartRegister, pConstantData, BoolCount));
 }
 
 HRESULT m_IDirect3DDevice9Ex::DrawRectPatch(UINT Handle, CONST float* pNumSegs, CONST D3DRECTPATCH_INFO* pRectPatchInfo)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->DrawRectPatch(Handle, pNumSegs, pRectPatchInfo);
+	return SAFE(ProxyInterface->DrawRectPatch(Handle, pNumSegs, pRectPatchInfo));
 }
 
 HRESULT m_IDirect3DDevice9Ex::DrawTriPatch(UINT Handle, CONST float* pNumSegs, CONST D3DTRIPATCH_INFO* pTriPatchInfo)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->DrawTriPatch(Handle, pNumSegs, pTriPatchInfo);
+	return SAFE(ProxyInterface->DrawTriPatch(Handle, pNumSegs, pTriPatchInfo));
 }
 
 HRESULT m_IDirect3DDevice9Ex::DeletePatch(UINT Handle)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->DeletePatch(Handle);
+	return SAFE(ProxyInterface->DeletePatch(Handle));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CreateQuery(THIS_ D3DQUERYTYPE Type, IDirect3DQuery9** ppQuery)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	HRESULT hr = ProxyInterface->CreateQuery(Type, ppQuery);
+	HRESULT hr = SAFE(ProxyInterface->CreateQuery(Type, ppQuery));
 
 	if (SUCCEEDED(hr) && ppQuery)
 	{
@@ -2116,7 +2116,7 @@ HRESULT m_IDirect3DDevice9Ex::SetConvolutionMonoKernel(THIS_ UINT width, UINT he
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->SetConvolutionMonoKernel(width, height, rows, columns);
+	return SAFE(ProxyInterfaceEx->SetConvolutionMonoKernel(width, height, rows, columns));
 }
 
 HRESULT m_IDirect3DDevice9Ex::ComposeRects(THIS_ IDirect3DSurface9* pSrc, IDirect3DSurface9* pDst, IDirect3DVertexBuffer9* pSrcRectDescs, UINT NumRects, IDirect3DVertexBuffer9* pDstRectDescs, D3DCOMPOSERECTSOP Operation, int Xoffset, int Yoffset)
@@ -2150,7 +2150,7 @@ HRESULT m_IDirect3DDevice9Ex::ComposeRects(THIS_ IDirect3DSurface9* pSrc, IDirec
 		pDstRectDescs = static_cast<m_IDirect3DVertexBuffer9*>(pDstRectDescs)->GetProxyInterface();
 	}
 
-	HRESULT hr = ProxyInterfaceEx->ComposeRects(pSrc, pDst, pSrcRectDescs, NumRects, pDstRectDescs, Operation, Xoffset, Yoffset);
+	HRESULT hr = SAFE(ProxyInterfaceEx->ComposeRects(pSrc, pDst, pSrcRectDescs, NumRects, pDstRectDescs, Operation, Xoffset, Yoffset));
 
 	if (SUCCEEDED(hr) && m_pDst)
 	{
@@ -2166,7 +2166,7 @@ HRESULT m_IDirect3DDevice9Ex::PresentEx(THIS_ CONST RECT* pSourceRect, CONST REC
 
 	ApplyPrePresentFixes();
 
-	HRESULT hr = ProxyInterfaceEx->PresentEx(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
+	HRESULT hr = SAFE(ProxyInterfaceEx->PresentEx(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags));
 
 	if (SUCCEEDED(hr))
 	{
@@ -2186,7 +2186,7 @@ HRESULT m_IDirect3DDevice9Ex::GetGPUThreadPriority(THIS_ INT* pPriority)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetGPUThreadPriority(pPriority);
+	return SAFE(ProxyInterfaceEx->GetGPUThreadPriority(pPriority));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetGPUThreadPriority(THIS_ INT Priority)
@@ -2199,7 +2199,7 @@ HRESULT m_IDirect3DDevice9Ex::SetGPUThreadPriority(THIS_ INT Priority)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->SetGPUThreadPriority(Priority);
+	return SAFE(ProxyInterfaceEx->SetGPUThreadPriority(Priority));
 }
 
 HRESULT m_IDirect3DDevice9Ex::WaitForVBlank(THIS_ UINT iSwapChain)
@@ -2212,7 +2212,7 @@ HRESULT m_IDirect3DDevice9Ex::WaitForVBlank(THIS_ UINT iSwapChain)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->WaitForVBlank(iSwapChain);
+	return SAFE(ProxyInterfaceEx->WaitForVBlank(iSwapChain));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CheckResourceResidency(THIS_ IDirect3DResource9** pResourceArray, UINT32 NumResources)
@@ -2261,7 +2261,7 @@ HRESULT m_IDirect3DDevice9Ex::CheckResourceResidency(THIS_ IDirect3DResource9** 
 		}
 	}
 
-	return ProxyInterfaceEx->CheckResourceResidency(pResourceArray, NumResources);
+	return SAFE(ProxyInterfaceEx->CheckResourceResidency(pResourceArray, NumResources));
 }
 
 HRESULT m_IDirect3DDevice9Ex::SetMaximumFrameLatency(THIS_ UINT MaxLatency)
@@ -2274,7 +2274,7 @@ HRESULT m_IDirect3DDevice9Ex::SetMaximumFrameLatency(THIS_ UINT MaxLatency)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->SetMaximumFrameLatency(MaxLatency);
+	return SAFE(ProxyInterfaceEx->SetMaximumFrameLatency(MaxLatency));
 }
 
 HRESULT m_IDirect3DDevice9Ex::GetMaximumFrameLatency(THIS_ UINT* pMaxLatency)
@@ -2287,7 +2287,7 @@ HRESULT m_IDirect3DDevice9Ex::GetMaximumFrameLatency(THIS_ UINT* pMaxLatency)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetMaximumFrameLatency(pMaxLatency);
+	return SAFE(ProxyInterfaceEx->GetMaximumFrameLatency(pMaxLatency));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CheckDeviceState(THIS_ HWND hDestinationWindow)
@@ -2300,7 +2300,7 @@ HRESULT m_IDirect3DDevice9Ex::CheckDeviceState(THIS_ HWND hDestinationWindow)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->CheckDeviceState(hDestinationWindow);
+	return SAFE(ProxyInterfaceEx->CheckDeviceState(hDestinationWindow));
 }
 
 HRESULT m_IDirect3DDevice9Ex::CreateRenderTargetEx(THIS_ UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle, DWORD Usage)
@@ -2318,12 +2318,12 @@ HRESULT m_IDirect3DDevice9Ex::CreateRenderTargetEx(THIS_ UINT Width, UINT Height
 	// Try Multisampling
 	if (DeviceDetails.DeviceMultiSampleFlag && (MultiSample || !DeviceDetails.UseAppMultiSampleState))
 	{
-		hr = ProxyInterfaceEx->CreateRenderTargetEx(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, FALSE, ppSurface, pSharedHandle, Usage);
+		hr = SAFE(ProxyInterfaceEx->CreateRenderTargetEx(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, FALSE, ppSurface, pSharedHandle, Usage));
 	}
 
 	if (FAILED(hr))
 	{
-		hr = ProxyInterfaceEx->CreateRenderTargetEx(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle, Usage);
+		hr = SAFE(ProxyInterfaceEx->CreateRenderTargetEx(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle, Usage));
 
 		if (SUCCEEDED(hr) && DeviceDetails.DeviceMultiSampleFlag)
 		{
@@ -2359,11 +2359,11 @@ HRESULT m_IDirect3DDevice9Ex::CreateOffscreenPlainSurfaceEx(THIS_ UINT Width, UI
 		Format = (D3DFORMAT)Config.OverrideStencilFormat;
 	}
 
-	HRESULT hr = ProxyInterfaceEx->CreateOffscreenPlainSurfaceEx(Width, Height, Format, Pool, ppSurface, pSharedHandle, Usage);
+	HRESULT hr = SAFE(ProxyInterfaceEx->CreateOffscreenPlainSurfaceEx(Width, Height, Format, Pool, ppSurface, pSharedHandle, Usage));
 
 	if (FAILED(hr) && IsForcingD3d9to9Ex() && Width < 64 && Pool == D3DPOOL_SYSTEMMEM)
 	{
-		hr = ProxyInterfaceEx->CreateOffscreenPlainSurfaceEx(Width, Height, Format, D3DPOOL_DEFAULT, ppSurface, pSharedHandle, Usage);
+		hr = SAFE(ProxyInterfaceEx->CreateOffscreenPlainSurfaceEx(Width, Height, Format, D3DPOOL_DEFAULT, ppSurface, pSharedHandle, Usage));
 	}
 
 	if (SUCCEEDED(hr) && ppSurface)
@@ -2400,12 +2400,12 @@ HRESULT m_IDirect3DDevice9Ex::CreateDepthStencilSurfaceEx(THIS_ UINT Width, UINT
 	// Try Multisampling
 	if (DeviceDetails.DeviceMultiSampleFlag && (MultiSample || !DeviceDetails.UseAppMultiSampleState))
 	{
-		hr = ProxyInterfaceEx->CreateDepthStencilSurfaceEx(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, TRUE, ppSurface, pSharedHandle, Usage);
+		hr = SAFE(ProxyInterfaceEx->CreateDepthStencilSurfaceEx(Width, Height, Format, DeviceDetails.DeviceMultiSampleType, DeviceDetails.DeviceMultiSampleQuality, TRUE, ppSurface, pSharedHandle, Usage));
 	}
 
 	if (FAILED(hr))
 	{
-		hr = ProxyInterfaceEx->CreateDepthStencilSurfaceEx(Width, Height, Format, MultiSample, MultisampleQuality, Discard, ppSurface, pSharedHandle, Usage);
+		hr = SAFE(ProxyInterfaceEx->CreateDepthStencilSurfaceEx(Width, Height, Format, MultiSample, MultisampleQuality, Discard, ppSurface, pSharedHandle, Usage));
 
 		if (SUCCEEDED(hr) && DeviceDetails.DeviceMultiSampleFlag)
 		{
@@ -2442,7 +2442,7 @@ HRESULT m_IDirect3DDevice9Ex::GetDisplayModeEx(THIS_ UINT iSwapChain, D3DDISPLAY
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterfaceEx->GetDisplayModeEx(iSwapChain, pMode, pRotation);
+	return SAFE(ProxyInterfaceEx->GetDisplayModeEx(iSwapChain, pMode, pRotation));
 }
 
 // ******************************
@@ -2479,7 +2479,7 @@ void m_IDirect3DDevice9Ex::ApplyPreDrawFixes()
 				LPDIRECT3DSURFACE9 pRenderTarget = msaa.RenderTarget->GetMultiSampledSurface();
 				if (pRenderTarget)
 				{
-					if (FAILED(ProxyInterface->SetRenderTarget(0, pRenderTarget)))
+					if (FAILED(SAFE(ProxyInterface->SetRenderTarget(0, pRenderTarget))))
 					{
 						LOG_LIMIT(100, __FUNCTION__ << " Warning: failed to set emulated render target!");
 					}
@@ -2500,7 +2500,7 @@ void m_IDirect3DDevice9Ex::ApplyPreDrawFixes()
 		{
 			ComPtr<IDirect3DBaseTexture9> pBaseTexture;
 
-			if (SUCCEEDED(ProxyInterface->GetTexture(x, pBaseTexture.GetAddressOf())) && pBaseTexture.Get())
+			if (SUCCEEDED(SAFE(ProxyInterface->GetTexture(x, pBaseTexture.GetAddressOf()))) && pBaseTexture.Get())
 			{
 				if (pBaseTexture->GetType() == D3DRTYPE_TEXTURE)
 				{
@@ -2524,7 +2524,7 @@ void m_IDirect3DDevice9Ex::ApplyPostDrawFixes()
 		LPDIRECT3DSURFACE9 pSurface = msaa.RenderTarget->GetProxyInterface();
 		if (pSurface)
 		{
-			if (FAILED(ProxyInterface->SetRenderTarget(0, pSurface)))
+			if (FAILED(SAFE(ProxyInterface->SetRenderTarget(0, pSurface))))
 			{
 				LOG_LIMIT(100, __FUNCTION__ << " Warning: failed to reset render target!");
 			}
@@ -2542,14 +2542,14 @@ void m_IDirect3DDevice9Ex::ApplyPrePresentFixes()
 		ScopedCriticalSection ThreadLock(&d9cs);
 
 		// Create state block
-		if (pStateBlock || SUCCEEDED(ProxyInterface->CreateStateBlock(D3DSBT_ALL, &pStateBlock)))
+		if (pStateBlock || SUCCEEDED(SAFE(ProxyInterface->CreateStateBlock(D3DSBT_ALL, &pStateBlock))))
 		{
 			// Begin scene
 			if (!Config.ForceSingleBeginEndScene || !BeginSceneCalled)
 			{
 				CalledBeginScene = true;
 
-				ProxyInterface->BeginScene();
+				SAFE(ProxyInterface->BeginScene());
 
 				AfterBeginScene();
 			}
@@ -2560,15 +2560,15 @@ void m_IDirect3DDevice9Ex::ApplyPrePresentFixes()
 			{
 				// Backup depth stencil
 				ComPtr<IDirect3DSurface9> pOldDepthStencil;
-				ProxyInterface->GetDepthStencilSurface(pOldDepthStencil.GetAddressOf());
+				SAFE(ProxyInterface->GetDepthStencilSurface(pOldDepthStencil.GetAddressOf()));
 
 				// Set back buffer as render target
 				ComPtr<IDirect3DSurface9> pOldRenderTarget, pBackBuffer;
-				if (SUCCEEDED(ProxyInterface->GetRenderTarget(0, pOldRenderTarget.GetAddressOf())) &&
-					SUCCEEDED(ProxyInterface->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, pBackBuffer.GetAddressOf())))
+				if (SUCCEEDED(SAFE(ProxyInterface->GetRenderTarget(0, pOldRenderTarget.GetAddressOf()))) &&
+					SUCCEEDED(SAFE(ProxyInterface->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, pBackBuffer.GetAddressOf()))))
 				{
-					ProxyInterface->SetDepthStencilSurface(nullptr);
-					ProxyInterface->SetRenderTarget(0, pBackBuffer.Get());
+					SAFE(ProxyInterface->SetDepthStencilSurface(nullptr));
+					SAFE(ProxyInterface->SetRenderTarget(0, pBackBuffer.Get()));
 				}
 
 				// Apply brightness level
@@ -2591,13 +2591,13 @@ void m_IDirect3DDevice9Ex::ApplyPrePresentFixes()
 				// Restore render target
 				if (pOldRenderTarget.Get())
 				{
-					ProxyInterface->SetRenderTarget(0, pOldRenderTarget.Get());
+					SAFE(ProxyInterface->SetRenderTarget(0, pOldRenderTarget.Get()));
 				}
 
 				// Restore depth stencil
 				if (pOldDepthStencil.Get())
 				{
-					ProxyInterface->SetDepthStencilSurface(pOldDepthStencil.Get());
+					SAFE(ProxyInterface->SetDepthStencilSurface(pOldDepthStencil.Get()));
 				}
 			}
 
@@ -2610,7 +2610,7 @@ void m_IDirect3DDevice9Ex::ApplyPrePresentFixes()
 	{
 		BeforeEndScene();
 
-		ProxyInterface->EndScene();
+		SAFE(ProxyInterface->EndScene());
 	}
 	BeginSceneCalled = false;
 
@@ -2624,7 +2624,7 @@ void m_IDirect3DDevice9Ex::ApplyPostPresentFixes()
 	{
 		if (DeviceDetails.BackBufferCount == 1)
 		{
-			if (FAILED(ProxyInterface->StretchRect(ShadowBackbuffer->GetCurrentBackBuffer()->GetProxyInterface(), nullptr, ShadowBackbuffer->GetCurrentFrontBuffer()->GetProxyInterface(), nullptr, D3DTEXF_NONE)))
+			if (FAILED(SAFE(ProxyInterface->StretchRect(ShadowBackbuffer->GetCurrentBackBuffer()->GetProxyInterface(), nullptr, ShadowBackbuffer->GetCurrentFrontBuffer()->GetProxyInterface(), nullptr, D3DTEXF_NONE))))
 			{
 				LOG_LIMIT(100, __FUNCTION__ << " Warning: Failed to copy shadow backbuffer into shadow front buffer!");
 			}
@@ -2634,12 +2634,12 @@ void m_IDirect3DDevice9Ex::ApplyPostPresentFixes()
 			ShadowBackbuffer->Rotate();
 
 			ComPtr<IDirect3DSurface9> pSurface;
-			if (SUCCEEDED(ProxyInterface->GetRenderTarget(0, pSurface.GetAddressOf())))
+			if (SUCCEEDED(SAFE(ProxyInterface->GetRenderTarget(0, pSurface.GetAddressOf()))))
 			{
 				if (pSurface.Get() == ShadowBackbuffer->GetCurrentFrontBuffer()->GetProxyInterface() ||
 					std::find(BackBufferList.begin(), BackBufferList.end(), pSurface.Get()) != BackBufferList.end())
 				{
-					ProxyInterface->SetRenderTarget(0, ShadowBackbuffer->GetCurrentBackBuffer()->GetProxyInterface());
+					SAFE(ProxyInterface->SetRenderTarget(0, ShadowBackbuffer->GetCurrentBackBuffer()->GetProxyInterface()));
 				}
 			}
 		}
@@ -2666,7 +2666,7 @@ void m_IDirect3DDevice9Ex::ApplyClipPlanes()
 	{
 		if ((ClipPlaneRenderState & (1 << index)) != 0)
 		{
-			ProxyInterface->SetClipPlane(index, plane);
+			SAFE(ProxyInterface->SetClipPlane(index, plane));
 		}
 		index++;
 	}
@@ -2907,14 +2907,14 @@ HRESULT m_IDirect3DDevice9Ex::SetBrightnessLevel(D3DGAMMARAMP& Ramp)
 		const DWORD Usage = (IsForcingD3d9to9Ex() ? D3DUSAGE_DYNAMIC : 0);
 		const D3DPOOL Pool = (IsForcingD3d9to9Ex() ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED);
 
-		if (SUCCEEDED(ProxyInterface->CreateTexture(256, 1, 1, Usage, D3DFMT_A32B32G32R32F, Pool, &GammaLUTTexture, nullptr)))
+		if (SUCCEEDED(SAFE(ProxyInterface->CreateTexture(256, 1, 1, Usage, D3DFMT_A32B32G32R32F, Pool, &GammaLUTTexture, nullptr))))
 		{
 			UsingShader32f = true;
 		}
 		else
 		{
 			UsingShader32f = false;
-			HRESULT hr = ProxyInterface->CreateTexture(256, 1, 1, Usage, D3DFMT_A8R8G8B8, Pool, &GammaLUTTexture, nullptr);
+			HRESULT hr = SAFE(ProxyInterface->CreateTexture(256, 1, 1, Usage, D3DFMT_A8R8G8B8, Pool, &GammaLUTTexture, nullptr));
 			if (FAILED(hr))
 			{
 				LOG_LIMIT(100, __FUNCTION__ << " Error: Failed to create gamma LUD texture!");
@@ -2960,7 +2960,7 @@ LPDIRECT3DPIXELSHADER9 m_IDirect3DDevice9Ex::GetGammaPixelShader()
 	// Create pixel shaders
 	if (!gammaPixelShader)
 	{
-		ProxyInterface->CreatePixelShader((DWORD*)GammaPixelShaderSrc, &gammaPixelShader);
+		SAFE(ProxyInterface->CreatePixelShader((DWORD*)GammaPixelShaderSrc, &gammaPixelShader));
 	}
 	return gammaPixelShader;
 }
@@ -2999,7 +2999,7 @@ void m_IDirect3DDevice9Ex::ApplyBrightnessLevel()
 	pBackBuffer->GetDesc(&desc);
 	if (!ScreenCopyTexture)
 	{
-		if (FAILED(ProxyInterface->CreateTexture(desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET, desc.Format, D3DPOOL_DEFAULT, &ScreenCopyTexture, nullptr)))
+		if (FAILED(SAFE(ProxyInterface->CreateTexture(desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET, desc.Format, D3DPOOL_DEFAULT, &ScreenCopyTexture, nullptr))))
 		{
 			LOG_LIMIT(100, __FUNCTION__ << " Error: Failed to create screen copy texture!");
 			return;
@@ -3012,40 +3012,40 @@ void m_IDirect3DDevice9Ex::ApplyBrightnessLevel()
 		LOG_LIMIT(100, __FUNCTION__ << " Error: Failed to get surface level from screen copy texture!");
 		return;
 	}
-	if (FAILED(ProxyInterface->StretchRect(pBackBuffer.Get(), nullptr, pCopySurface.Get(), nullptr, D3DTEXF_NONE)))
+	if (FAILED(SAFE(ProxyInterface->StretchRect(pBackBuffer.Get(), nullptr, pCopySurface.Get(), nullptr, D3DTEXF_NONE))))
 	{
 		LOG_LIMIT(100, __FUNCTION__ << " Error: Failed to copy render target!");
 		return;
 	}
 
 	// Set render states
-	ProxyInterface->SetRenderState(D3DRS_LIGHTING, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_FOGENABLE, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_ZENABLE, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	ProxyInterface->SetRenderState(D3DRS_CLIPPING, FALSE);
-	ProxyInterface->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+	SAFE(ProxyInterface->SetRenderState(D3DRS_LIGHTING, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_FOGENABLE, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_ZENABLE, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_ZWRITEENABLE, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_STENCILENABLE, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_CLIPPING, FALSE));
+	SAFE(ProxyInterface->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE));
 
 	// Set texture states
-	ProxyInterface->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-	ProxyInterface->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	ProxyInterface->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
-	ProxyInterface->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	SAFE(ProxyInterface->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE));
+	SAFE(ProxyInterface->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE));
+	SAFE(ProxyInterface->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT));
+	SAFE(ProxyInterface->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE));
 
 	// Set sampler states
 	for (UINT x = 0; x < 2; x++)
 	{
-		ProxyInterface->SetSamplerState(x, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
-		ProxyInterface->SetSamplerState(x, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+		SAFE(ProxyInterface->SetSamplerState(x, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP));
+		SAFE(ProxyInterface->SetSamplerState(x, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP));
 	}
 
 	// Set viewport
 	D3DVIEWPORT9 Viewport = { 0, 0, static_cast<DWORD>(DeviceDetails.BufferWidth), static_cast<DWORD>(DeviceDetails.BufferHeight), 0.0f, 1.0f };
-	ProxyInterface->SetViewport(&Viewport);
+	SAFE(ProxyInterface->SetViewport(&Viewport));
 
 	// Set trasform
 	D3DMATRIX identityMatrix = {
@@ -3054,25 +3054,25 @@ void m_IDirect3DDevice9Ex::ApplyBrightnessLevel()
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
-	ProxyInterface->SetTransform(D3DTS_WORLD, &identityMatrix);
-	ProxyInterface->SetTransform(D3DTS_VIEW, &identityMatrix);
-	ProxyInterface->SetTransform(D3DTS_PROJECTION, &identityMatrix);
+	SAFE(ProxyInterface->SetTransform(D3DTS_WORLD, &identityMatrix));
+	SAFE(ProxyInterface->SetTransform(D3DTS_VIEW, &identityMatrix));
+	SAFE(ProxyInterface->SetTransform(D3DTS_PROJECTION, &identityMatrix));
 
 	// Clear render target
-	ProxyInterface->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
+	SAFE(ProxyInterface->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0));
 
 	// Set texture
-	ProxyInterface->SetTexture(0, ScreenCopyTexture);
-	ProxyInterface->SetTexture(1, GammaLUTTexture);
+	SAFE(ProxyInterface->SetTexture(0, ScreenCopyTexture));
+	SAFE(ProxyInterface->SetTexture(1, GammaLUTTexture));
 
 	// Clear textures
 	for (int x = 2; x < MAX_TEXTURE_STAGES; x++)
 	{
-		ProxyInterface->SetTexture(x, nullptr);
+		SAFE(ProxyInterface->SetTexture(x, nullptr));
 	}
 
 	// Set shader
-	ProxyInterface->SetPixelShader(pShader);
+	SAFE(ProxyInterface->SetPixelShader(pShader));
 
 	const DWORD TLVERTEXFVF = (D3DFVF_XYZRHW | D3DFVF_TEX1);
 	struct TLVERTEX
@@ -3090,18 +3090,18 @@ void m_IDirect3DDevice9Ex::ApplyBrightnessLevel()
 	};
 
 	// Set FVF and render
-	ProxyInterface->SetFVF(TLVERTEXFVF);
-	if (FAILED(ProxyInterface->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, FullScreenQuadVertices, sizeof(TLVERTEX))))
+	SAFE(ProxyInterface->SetFVF(TLVERTEXFVF));
+	if (FAILED(SAFE(ProxyInterface->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, FullScreenQuadVertices, sizeof(TLVERTEX)))))
 	{
 		LOG_LIMIT(100, __FUNCTION__ << " Error: Failed to draw primitive!");
 	}
 
 	// Clear shader
-	ProxyInterface->SetPixelShader(nullptr);
+	SAFE(ProxyInterface->SetPixelShader(nullptr));
 
 	// Clear texture
-	ProxyInterface->SetTexture(0, nullptr);
-	ProxyInterface->SetTexture(1, nullptr);
+	SAFE(ProxyInterface->SetTexture(0, nullptr));
+	SAFE(ProxyInterface->SetTexture(1, nullptr));
 }
 
 DWORD m_IDirect3DDevice9Ex::GetResourceRefCount()
@@ -3161,7 +3161,7 @@ void m_IDirect3DDevice9Ex::ReleaseResources(bool isReset)
 		if (isBlankTextureUsed)
 		{
 			isBlankTextureUsed = false;
-			ProxyInterface->SetTexture(0, nullptr);
+			SAFE(ProxyInterface->SetTexture(0, nullptr));
 		}
 		ULONG ref = BlankTexture->Release();
 		if (ref)
@@ -3321,7 +3321,7 @@ void m_IDirect3DDevice9Ex::SetEnvironmentCubeMapTexture()
 			const DWORD Usage = (IsForcingD3d9to9Ex() ? D3DUSAGE_DYNAMIC : 0);
 			const D3DPOOL Pool = (IsForcingD3d9to9Ex() ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED);
 
-			HRESULT hr = ProxyInterface->CreateCubeTexture(CubeSize, 1, Usage, D3DFMT_A8R8G8B8, Pool, &BlankTexture, nullptr);
+			HRESULT hr = SAFE(ProxyInterface->CreateCubeTexture(CubeSize, 1, Usage, D3DFMT_A8R8G8B8, Pool, &BlankTexture, nullptr));
 			if (FAILED(hr))
 			{
 				LOG_LIMIT(100, __FUNCTION__ << " Error: failed to create BlankCubeTexture for environment map!");
@@ -3352,12 +3352,12 @@ void m_IDirect3DDevice9Ex::SetEnvironmentCubeMapTexture()
 		}
 
 		isBlankTextureUsed = true;
-		ProxyInterface->SetTexture(0, BlankTexture);
+		SAFE(ProxyInterface->SetTexture(0, BlankTexture));
 	}
 	else if (!isCubeMap && isBlankTextureUsed)
 	{
 		isBlankTextureUsed = false;
-		ProxyInterface->SetTexture(0, nullptr);
+		SAFE(ProxyInterface->SetTexture(0, nullptr));
 	}
 }
 
@@ -3383,7 +3383,7 @@ void m_IDirect3DDevice9Ex::ReInitInterface()
 		DefaultRampData.blue[i] = value;
 	}
 
-	if (FAILED(ProxyInterface->GetDeviceCaps(&Caps)))
+	if (FAILED(SAFE(ProxyInterface->GetDeviceCaps(&Caps))))
 	{
 		Logging::Log() << __FUNCTION__ << " Error: Falied to get DeviceCaps (" << this << ")";
 	}
@@ -3408,7 +3408,7 @@ void m_IDirect3DDevice9Ex::ReInitInterface()
 		// Handle render target
 		{
 			ComPtr<IDirect3DSurface9> pSurface;
-			if (SUCCEEDED(ProxyInterface->GetRenderTarget(0, pSurface.GetAddressOf())) && pSurface.Get())
+			if (SUCCEEDED(SAFE(ProxyInterface->GetRenderTarget(0, pSurface.GetAddressOf()))) && pSurface.Get())
 			{
 				D3DSURFACE_DESC Desc = {};
 				pSurface->GetDesc(&Desc);
@@ -3418,7 +3418,7 @@ void m_IDirect3DDevice9Ex::ReInitInterface()
 		// Handle depth stencil surface
 		{
 			ComPtr<IDirect3DSurface9> pSurface;
-			if (SUCCEEDED(ProxyInterface->GetDepthStencilSurface(pSurface.GetAddressOf())) && pSurface.Get())
+			if (SUCCEEDED(SAFE(ProxyInterface->GetDepthStencilSurface(pSurface.GetAddressOf()))) && pSurface.Get())
 			{
 				msaa.NullDepthStencil = false;
 
@@ -3454,7 +3454,7 @@ void m_IDirect3DDevice9Ex::CreateShadowBackbuffer()
 	D3DSURFACE_DESC Desc = {};
 	{
 		ComPtr<IDirect3DSurface9> pBackbuffer;
-		if (FAILED(ProxyInterface->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, pBackbuffer.GetAddressOf())))
+		if (FAILED(SAFE(ProxyInterface->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, pBackbuffer.GetAddressOf()))))
 		{
 			Logging::Log() << __FUNCTION__ << " Error: failed to get Back Buffer!";
 			return;
@@ -3482,13 +3482,13 @@ void m_IDirect3DDevice9Ex::CreateShadowBackbuffer()
 		ShadowBackbuffer->SetSurface(i, surf);
 
 		ComPtr<IDirect3DSurface9> pBackbuffer;
-		if (SUCCEEDED(ProxyInterface->GetBackBuffer(0, i, D3DBACKBUFFER_TYPE_MONO, pBackbuffer.GetAddressOf())))
+		if (SUCCEEDED(SAFE(ProxyInterface->GetBackBuffer(0, i, D3DBACKBUFFER_TYPE_MONO, pBackbuffer.GetAddressOf()))))
 		{
 			BackBufferList.push_back(pBackbuffer.Get());
 		}
 	}
 
-	ProxyInterface->SetRenderTarget(0, ShadowBackbuffer->GetCurrentBackBuffer()->GetProxyInterface());
+	SAFE(ProxyInterface->SetRenderTarget(0, ShadowBackbuffer->GetCurrentBackBuffer()->GetProxyInterface()));
 }
 
 void m_IDirect3DDevice9Ex::ReleaseShadowBackbuffer()
@@ -3496,9 +3496,9 @@ void m_IDirect3DDevice9Ex::ReleaseShadowBackbuffer()
 	if (UsingShadowBackBuffer())
 	{
 		ComPtr<IDirect3DSurface9> pBackbuffer;
-		if (SUCCEEDED(ProxyInterface->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, pBackbuffer.GetAddressOf())))
+		if (SUCCEEDED(SAFE(ProxyInterface->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, pBackbuffer.GetAddressOf()))))
 		{
-			ProxyInterface->SetRenderTarget(0, pBackbuffer.Get());
+			SAFE(ProxyInterface->SetRenderTarget(0, pBackbuffer.Get()));
 		}
 
 		ShadowBackbuffer->ReleaseAll();
@@ -3528,7 +3528,7 @@ HRESULT m_IDirect3DDevice9Ex::ResetT(T func, D3DPRESENT_PARAMETERS* pPresentatio
 	}
 #endif
 
-	ProxyInterface->EndScene();		// Required for some games when using WineD3D
+	SAFE(ProxyInterface->EndScene());		// Required for some games when using WineD3D
 
 	HRESULT hr = D3DERR_INVALIDCALL;
 
@@ -3656,7 +3656,7 @@ HRESULT m_IDirect3DDevice9Ex::GetFakeFrontBufferData(THIS_ UINT iSwapChain, IDir
 	// Use native GetFrontBufferData()
 	if (DeviceDetails.AppRequestedWindowMode || ((LONG)Desc.Width == DeviceDetails.screenWidth && (LONG)Desc.Height == DeviceDetails.screenHeight))
 	{
-		return ProxyInterface->GetFrontBufferData(iSwapChain, pDestSurface);
+		return SAFE(ProxyInterface->GetFrontBufferData(iSwapChain, pDestSurface));
 	}
 
 	// Get location of client window
@@ -3685,13 +3685,13 @@ HRESULT m_IDirect3DDevice9Ex::GetFakeFrontBufferData(THIS_ UINT iSwapChain, IDir
 
 	// Create new surface to hold data
 	ComPtr<IDirect3DSurface9> pSourceSurface;
-	if (FAILED(ProxyInterface->CreateOffscreenPlainSurface(DeviceDetails.screenWidth, DeviceDetails.screenHeight, Desc.Format, Desc.Pool, pSourceSurface.GetAddressOf(), nullptr)))
+	if (FAILED(SAFE(ProxyInterface->CreateOffscreenPlainSurface(DeviceDetails.screenWidth, DeviceDetails.screenHeight, Desc.Format, Desc.Pool, pSourceSurface.GetAddressOf(), nullptr))))
 	{
 		return D3DERR_INVALIDCALL;
 	}
 
 	// Get FrontBuffer data on new surface
-	if (FAILED(ProxyInterface->GetFrontBufferData(iSwapChain, pSourceSurface.Get())))
+	if (FAILED(SAFE(ProxyInterface->GetFrontBufferData(iSwapChain, pSourceSurface.Get()))))
 	{
 		return D3DERR_INVALIDCALL;
 	}
