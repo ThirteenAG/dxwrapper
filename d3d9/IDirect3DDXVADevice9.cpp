@@ -38,7 +38,7 @@ HRESULT m_IDirect3DDXVADevice9::QueryInterface(THIS_ REFIID riid, void** ppvObj)
 		return D3D_OK;
 	}
 
-	HRESULT hr = ProxyInterface->QueryInterface(riid, ppvObj);
+	HRESULT hr = SAFE(ProxyInterface->QueryInterface(riid, ppvObj));
 
 	if (SUCCEEDED(hr))
 	{
@@ -52,14 +52,14 @@ ULONG m_IDirect3DDXVADevice9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return SAFE(ProxyInterface->AddRef());
 }
 
 ULONG m_IDirect3DDXVADevice9::Release(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Release();
+	return SAFE(ProxyInterface->Release());
 }
 
 // ******************************
@@ -75,14 +75,14 @@ HRESULT m_IDirect3DDXVADevice9::BeginFrame(THIS_ IDirect3DSurface9* pDstSurface,
 		pDstSurface = static_cast<m_IDirect3DSurface9*>(pDstSurface)->GetProxyInterface();
 	}
 
-	return ProxyInterface->BeginFrame(pDstSurface, SizeInputData, pInputData, pSizeOutputData, pOutputData);
+	return SAFE(ProxyInterface->BeginFrame(pDstSurface, SizeInputData, pInputData, pSizeOutputData, pOutputData));
 }
 
 HRESULT m_IDirect3DDXVADevice9::EndFrame(THIS_ DWORD SizeMiscData, VOID* pMiscData)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->EndFrame(SizeMiscData, pMiscData);
+	return SAFE(ProxyInterface->EndFrame(SizeMiscData, pMiscData));
 }
 
 HRESULT m_IDirect3DDXVADevice9::Execute(THIS_ DWORD FunctionNum, VOID* pInputData, DWORD InputSize, VOID* OuputData, DWORD OutputSize, DWORD NumBuffers, DXVABufferInfo* pBufferInfo)
@@ -116,7 +116,7 @@ HRESULT m_IDirect3DDXVADevice9::Execute(THIS_ DWORD FunctionNum, VOID* pInputDat
 
 	DXVABufferInfo* buffers = (pBufferInfo && NumBuffers) ? localBuffers.data() : pBufferInfo;
 
-	return ProxyInterface->Execute(FunctionNum, pInputData, InputSize, OuputData, OutputSize, NumBuffers, buffers);
+	return SAFE(ProxyInterface->Execute(FunctionNum, pInputData, InputSize, OuputData, OutputSize, NumBuffers, buffers));
 }
 
 HRESULT m_IDirect3DDXVADevice9::QueryStatus(THIS_ IDirect3DSurface9* pSurface, DWORD Flags)
@@ -128,5 +128,5 @@ HRESULT m_IDirect3DDXVADevice9::QueryStatus(THIS_ IDirect3DSurface9* pSurface, D
 		pSurface = static_cast<m_IDirect3DSurface9*>(pSurface)->GetProxyInterface();
 	}
 
-	return ProxyInterface->QueryStatus(pSurface, Flags);
+	return SAFE(ProxyInterface->QueryStatus(pSurface, Flags));
 }

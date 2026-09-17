@@ -38,7 +38,7 @@ HRESULT m_IDirect3DPixelShader9::QueryInterface(THIS_ REFIID riid, void** ppvObj
 		return D3D_OK;
 	}
 
-	HRESULT hr = ProxyInterface->QueryInterface(riid, ppvObj);
+	HRESULT hr = SAFE(ProxyInterface->QueryInterface(riid, ppvObj));
 
 	if (SUCCEEDED(hr))
 	{
@@ -52,14 +52,14 @@ ULONG m_IDirect3DPixelShader9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return SAFE(ProxyInterface->AddRef());
 }
 
 ULONG m_IDirect3DPixelShader9::Release(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Release();
+	return SAFE(ProxyInterface->Release());
 }
 
 // ******************************
@@ -82,5 +82,5 @@ HRESULT m_IDirect3DPixelShader9::GetFunction(THIS_ void* pData, UINT* pSizeOfDat
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetFunction(pData, pSizeOfData);
+	return SAFE(ProxyInterface->GetFunction(pData, pSizeOfData));
 }

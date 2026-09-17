@@ -44,7 +44,7 @@ HRESULT m_IDirect3DStateBlock9::QueryInterface(THIS_ REFIID riid, void** ppvObj)
 		return D3DERR_INVALIDCALL;
 	}
 
-	HRESULT hr = ProxyInterface->QueryInterface(riid, ppvObj);
+	HRESULT hr = SAFE(ProxyInterface->QueryInterface(riid, ppvObj));
 
 	if (SUCCEEDED(hr))
 	{
@@ -63,7 +63,7 @@ ULONG m_IDirect3DStateBlock9::AddRef(THIS)
 		return 0;
 	}
 
-	return ProxyInterface->AddRef();
+	return SAFE(ProxyInterface->AddRef());
 }
 
 ULONG m_IDirect3DStateBlock9::Release(THIS)
@@ -76,7 +76,7 @@ ULONG m_IDirect3DStateBlock9::Release(THIS)
 		return 0;
 	}
 
-	ULONG ref = ProxyInterface->Release();
+	ULONG ref = SAFE(ProxyInterface->Release());
 
 	if (ref == 0)
 	{
@@ -124,7 +124,7 @@ HRESULT m_IDirect3DStateBlock9::Capture(THIS)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterface->Capture();
+	return SAFE(ProxyInterface->Capture());
 }
 
 HRESULT m_IDirect3DStateBlock9::Apply(THIS)
@@ -136,5 +136,5 @@ HRESULT m_IDirect3DStateBlock9::Apply(THIS)
 		return D3DERR_INVALIDCALL;
 	}
 
-	return ProxyInterface->Apply();
+	return SAFE(ProxyInterface->Apply());
 }

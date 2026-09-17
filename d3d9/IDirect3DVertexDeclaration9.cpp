@@ -38,7 +38,7 @@ HRESULT m_IDirect3DVertexDeclaration9::QueryInterface(THIS_ REFIID riid, void** 
 		return D3D_OK;
 	}
 
-	HRESULT hr = ProxyInterface->QueryInterface(riid, ppvObj);
+	HRESULT hr = SAFE(ProxyInterface->QueryInterface(riid, ppvObj));
 
 	if (SUCCEEDED(hr))
 	{
@@ -52,14 +52,14 @@ ULONG m_IDirect3DVertexDeclaration9::AddRef(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->AddRef();
+	return SAFE(ProxyInterface->AddRef());
 }
 
 ULONG m_IDirect3DVertexDeclaration9::Release(THIS)
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->Release();
+	return SAFE(ProxyInterface->Release());
 }
 
 // ******************************
@@ -82,5 +82,5 @@ HRESULT m_IDirect3DVertexDeclaration9::GetDeclaration(THIS_ D3DVERTEXELEMENT9* p
 {
 	Logging::LogDebug() << __FUNCTION__ << " (" << this << ")";
 
-	return ProxyInterface->GetDeclaration(pElement, pNumElements);
+	return SAFE(ProxyInterface->GetDeclaration(pElement, pNumElements));
 }
